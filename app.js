@@ -1,10 +1,11 @@
 const express = require("express")
 const app = express()
-const WebSocketServer = require("ws").Server
-const wss = new WebSocketServer({port: 8090})
 const Player = require("./Classes/Player").Player
 const Room = require("./Classes/Room").Room
 const Validate = require("./Classes/Validate").Validate
+const WebSocketServer = require("ws").Server
+const wss = new WebSocketServer({port: 8090})
+const WS = require("./Classes/Websocket").Websocket
 
 let valid = new Validate()
 
@@ -39,9 +40,11 @@ app.get('/register/:username', function (req, res) {
 
 wss.on("connection", function(ws, req, client){
     
-    ws.on('message', function(message){
+    let socket = new WS(ws)
         
-    })
+    ws.on("open", socket.open())
+    // ws.on("message", () => socket.message(message))
+    // ws.open()
     
 })
 
