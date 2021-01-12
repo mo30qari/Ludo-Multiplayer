@@ -38,13 +38,12 @@ app.get('/register/:username', function (req, res) {
     res.end()
 })
 
-wss.on("connection", function(ws, req, client){
-    
+wss.on('connection', function(ws, req, client){
     let socket = new WS(ws)
-        
-    ws.on("open", socket.open())
-    // ws.on("message", () => socket.message(message))
-    // ws.open()
+    
+    ws.onopen = socket.open()
+    ws.on('message', function(message){socket.message(message)})
+    ws.on('close', function(){socket.close()})
     
 })
 
