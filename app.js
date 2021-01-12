@@ -1,11 +1,11 @@
 const express = require("express")
 const app = express()
-const Player = require("./Classes/Player").Player
-const Room = require("./Classes/Room").Room
-const Validate = require("./Classes/Validate").Validate
+const Player = require("./obj/Player").Player
+const Room = require("./obj/Room").Room
+const Validate = require("./obj/Validate").Validate
 const WebSocketServer = require("ws").Server
-const wss = new WebSocketServer({port: 8090})
-const WS = require("./Classes/Websocket").Websocket
+const wss = new WebSocketServer({ port: 8090 })
+const WS = require("./obj/Websocket").Websocket
 
 let valid = new Validate()
 
@@ -15,7 +15,7 @@ app.get('/', function (req, res) {
 
 app.get('/register/:username', function (req, res) {
     res.setHeader('Content-Type', 'application/json')
-    
+
     //BEBUG
     // let playerId = parseInt(Math.random() * 1000000)
     let playerId = 5485835
@@ -28,23 +28,23 @@ app.get('/register/:username', function (req, res) {
             player: player
         }))
         // Player should be inserted into DB
-        
+
     } else {
         res.write(JSON.stringify({
             result: false
         }))
     }
-    
+
     res.end()
 })
 
-wss.on('connection', function(ws, req, client){
+wss.on('connection', function (ws, req, client) {
     let socket = new WS(ws)
-    
+
     ws.onopen = socket.open()
-    ws.on('message', function(message){socket.message(message)})
-    ws.on('close', function(){socket.close()})
-    
+    ws.on('message', function (message) { socket.message(message) })
+    ws.on('close', function () { socket.close() })
 })
 
 app.listen(8080)
+console.log("HTTP connected on port :8080...")

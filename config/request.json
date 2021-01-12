@@ -1,0 +1,21 @@
+{
+    "JoinToRoomReq": {
+        "RoomID": {
+            "type": "string",
+            "min": 7,
+            "max": 7
+        },
+        "PlayerID": {
+            "type": "string",
+            "min": 7,
+            "max": 7
+        }
+    },
+    "DiceRolledReq": {
+        "Dice": {
+            "type": "int",
+            "min": 1,
+            "max": 6
+        }
+    } 
+}
