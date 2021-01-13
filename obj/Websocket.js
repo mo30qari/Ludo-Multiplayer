@@ -9,8 +9,10 @@ const Websocket = function (ws) {
         console.log("Websocket connected on port :8090...")
     }
 
-    this.message = function (message) {
+    this.message = function (req) {
+        //The request should be validated via Validate.validateRequest()
         let valid = new Validate()
+        valid.validateRequest(JSON.parse(req))
 
         // switch (message.__Type){
         //     case "JoinToRoomReq":
