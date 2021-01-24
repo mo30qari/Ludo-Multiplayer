@@ -1,3 +1,4 @@
+const format = require("../config/request.json")
 const Validate = function () {
 
     this.validateString = function (str, min, max) {
@@ -15,13 +16,19 @@ const Validate = function () {
         if(type && type != "" && typeof type === "string" && type.length > 0 && type.length < 32){
             return {result: true}
         }
-        return {result: false, error: "Invalid Type of Request!"}
+        return {result: false, error: "Invalid type of request!"}
     }
 
     this.validateRequest = function (req) {
         let result = this.validateType(req.__Type)
         if (result){        
-            //Now it seems the __Type of request is correct. The rest of the message should be validated from now on.
+            let f = format[req.__Type]
+
+            for(const[key, value] of Object.entries(req)){//Iterating in request
+                if(key != "__Type"){//__Type has been validated before, Validate everything but that.
+                    //The suitable function should be called here. I seek for a way to call a this.function with string
+                }
+            }
         }
         return result.error
     }

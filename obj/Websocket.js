@@ -33,7 +33,7 @@ const Websocket = function (ws) {
     }
 
     this.close = function () {
-        console.log("WS Closed!")
+        console.log("Websocket closed!")
     }
 
 }
