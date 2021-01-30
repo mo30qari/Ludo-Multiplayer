@@ -21,12 +21,15 @@ const Validate = function () {
 
     this.validateRequest = function (req) {
         let result = this.validateType(req.__Type)
-        if (result){        
+        if (result){//__Type is valid    
             let f = format[req.__Type]
 
             for(const[key, value] of Object.entries(req)){//Iterating in request
                 if(key != "__Type"){//__Type has been validated before, Validate everything but that.
-                    //The suitable function should be called here. I seek for a way to call a this.function with string
+                    switch (key){
+                        case "string":
+                            this.validateString()
+                    }
                 }
             }
         }
