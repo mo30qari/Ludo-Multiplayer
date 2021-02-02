@@ -12,7 +12,16 @@ const Websocket = function (ws) {
     this.message = function (req) {
         //The request should be validated via Validate.validateRequest()
         let valid = new Validate()
-        valid.validateRequest(JSON.parse(req))
+        let result = valid.validateRequest(JSON.parse(req))
+        
+        if (result.status) {
+            console.log("The request is valid")
+        } else {
+            ws.send(JSON.stringify({
+                Status: "Your request has been rejected due to following errors!",
+                Errors: result.errors
+            }))
+        }
 
         // switch (message.__Type){
         //     case "JoinToRoomReq":

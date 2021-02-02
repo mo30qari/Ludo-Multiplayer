@@ -20,8 +20,10 @@ app.get('/register/:username', function (req, res) {
     // let playerId = parseInt(Math.random() * 1000000)
     let playerId = 5485835
     //
+    
+    let r = valid.validateString(req.params["username"], 5, 20)
 
-    if (valid.validateString(req.params["username"], 5, 20)) {
+    if (r.status) {
         let player = new Player(playerId, req.params["username"])
         res.write(JSON.stringify({
             result: true,
@@ -30,9 +32,7 @@ app.get('/register/:username', function (req, res) {
         // Player should be inserted into DB
 
     } else {
-        res.write(JSON.stringify({
-            result: false
-        }))
+        res.write(JSON.stringify(r))
     }
 
     res.end()
