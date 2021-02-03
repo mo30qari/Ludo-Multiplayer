@@ -18,7 +18,7 @@ const Websocket = function (ws) {
             console.log("The request is valid")
         } else {
             ws.send(JSON.stringify({
-                Status: "Your request has been rejected due to following errors!",
+                Status: "Your request has been rejected due to following errors:",
                 Errors: result.errors
             }))
         }
