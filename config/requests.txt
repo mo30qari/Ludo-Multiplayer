@@ -1,4 +1,21 @@
+{
+	"__Type":"InitialReq",
+	"PlayerID": 5485835
+}
+
 /////////////////////////////
+
+{
+	"__Type":"CreateRoomReq",
+	"Settings": {
+		"SafeSquares": true,
+		"Capacity": 3,
+		"1stTurnExit": false
+	}
+}
+
+/////////////////////////////
+
 
 {
 	"__Type":"JoinToRoomReq",

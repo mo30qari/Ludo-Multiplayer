@@ -1,7 +1,6 @@
 const Room = function(){
 
     this.id;
-    this.name;
 
 }
 

@@ -6,6 +6,16 @@
             "max": 9999999
         }
     },
+    "CreateRoomReq": {
+        "Settings": {
+            "type": "object",
+            "properties": [
+                "Capacity",
+                "SafeSquares",
+                "1stTurnExit"
+            ]
+        }
+    },
     "JoinToRoomReq": {
         "RoomID": {
             "type": "number",

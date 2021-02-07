@@ -14,22 +14,17 @@ const Player = function (id) {
     }
 
     this.getStatus = function () {//Shows a player is active and true or not
-        let result = { status: true, errors: [] }
-        let exist = db.findPlayer(this)
-        
-        if (!exist.status) {
-            result = exist
-        } 
-        
-        if (result.errors.length) {
-            result.status = false
-        }
-
-        return result
+        return db.getPlayer(this)
     }
     
     this.setWS = function (ws) {
-        this.ws = ws
+        let result = db.updatePlayer(this, "ws", ws)
+        
+        if (!result.status) {
+            console.log(result.errors)//Unexpected error! I suppose everything is OK here!
+        } else {
+            this.ws = ws
+        }
     }
 
 }
