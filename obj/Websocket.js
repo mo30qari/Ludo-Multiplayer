@@ -37,8 +37,8 @@ const Websocket = function (ws) {
         let player = new Player(this.message.PlayerID)
         let result = player.getStatus()
 
-        if (result.status) {
-            console.log("The Player exists. Go on...")
+        if (result.status) {//The player exists and isn't deleted
+            player.setWS(ws)//From now on the player can be verified with WS
         } else {
             this.showErrors(DEFAULT_ERROR_TITLE, result.errors)
         }

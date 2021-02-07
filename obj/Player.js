@@ -1,5 +1,5 @@
 const DB = require("./Database").Database
-const db = new DB()
+let db = new DB()
 
 const Player = function (id) {
 
@@ -26,6 +26,10 @@ const Player = function (id) {
         }
 
         return result
+    }
+    
+    this.setWS = function (ws) {
+        this.ws = ws
     }
 
 }
