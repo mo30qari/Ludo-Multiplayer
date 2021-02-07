@@ -1,4 +1,11 @@
 {
+    "InitialReq": {
+        "PlayerID": {
+            "type": "number",
+            "min": 1000000,
+            "max": 9999999
+        }
+    },
     "JoinToRoomReq": {
         "RoomID": {
             "type": "number",

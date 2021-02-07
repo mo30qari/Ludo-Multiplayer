@@ -20,19 +20,21 @@ app.get('/register/:username', function (req, res) {
     // let playerId = parseInt(Math.random() * 1000000)
     let playerId = 5485835
     //
-    
-    let r = valid.validateString(req.params["username"], 5, 20)
 
-    if (r.status) {
-        let player = new Player(playerId, req.params["username"])
+    let result = valid.validateString(req.params["username"], 5, 20)
+
+    if (result.status) {
+        let player = new Player(playerId)
         res.write(JSON.stringify({
-            result: true,
+            status: true,
             player: player
         }))
-        // Player should be inserted into DB
+
+        player.setName(req.params["username"])
+        player.addToPlayers()
 
     } else {
-        res.write(JSON.stringify(r))
+        res.write(JSON.stringify(result))
     }
 
     res.end()
@@ -42,7 +44,7 @@ wss.on('connection', function (ws, req, client) {
     let socket = new WS(ws)
 
     ws.onopen = socket.open()
-    ws.on('message', function (message) { socket.message(message) })
+    ws.on('message', function (message) { socket.handleMessage(message) })
     ws.on('close', function () { socket.close() })
 })
 
