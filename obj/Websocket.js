@@ -9,7 +9,7 @@ const Websocket = function (ws) {
     this.message
 
     this.open = function () {
-        ws.send("Websocket connected on port :8090...")
+        this.ws.send("Websocket connected on port :8090...")
         console.log("Websocket connected on port :8090...")
     }
 
@@ -17,50 +17,55 @@ const Websocket = function (ws) {
         req = JSON.parse(req)
 
         let valid = new Validate()
-        let result = valid.validateRequest(req)//The request should be validated via Validate.validateRequest()
+        let result = valid.validateRequest(req)// The request should be validated via Validate.validateRequest()
 
-        if (result.status) {//Valid request
+        if (result.status) {// Valid request
             this.message = req
 
             switch (this.message.__Type) {
-                case "InitialReq": //Registering player in the Websocket server 
+                case "InitialReq": // Registering player in the Websocket server 
                     this.handleInitialReq()
                     break
-                case "CreateRoomReq": //When player creates a room
+                case "CreateRoomReq": // When player creates a room
                     this.handleCreateRoomReq()
                     break
             }
 
-        } else {//Unauthorized request
-            ws.send("Unauthorized request. The connection terminated!")
-            ws.terminate()//Unauthorized request
+        } else {// Unauthorized request
+            result.message = "Unauthorized request. The connection terminated!"
+            this.ws.send(JSON.stringify(result))
+            this.ws.terminate()// Unauthorized request
         }
     }
 
-    //HANDLE FUNCTIONS
+    //  HANDLE FUNCTIONS
 
     this.handleInitialReq = function () {
-        let player = new Player(ws)
-        let result = player.getMeByIDAndSet(message.PlayerID)
+        let player = new Player(undefined, this.message.PlayerID)
         
-        if (!result.status) {//Unauthorized request
-            ws.terminate()
+        if (!player.id) {// Unauthorized request
+            this.ws.send("Unauthorized user. The connection terminated!")
+            this.ws.terminate()
+            //console.log(result.errors)
         } else {
-            this.sendInitialRes(result.player.name)
+            let result = player.setWS(this.ws)// Relate user information sent via HTTPS and other information sent via Websocket
+            this.sendInitialRes(player.name)
         }
         
     }
 
     this.handleCreateRoomReq = function () {
-        let player = new Player(0, ws)//Create a player instance just with WS
+        let player = new Player(this.ws)
+        console.log(player)
+        
     }
 
-    //End of HANDLE FUNCTIONS
+    // End of HANDLE FUNCTIONS
 
-    //SEND RESPONSE FUNCTIONS
+    // SEND RESPONSE FUNCTIONS
 
     this.sendInitialRes = function (name) {
-        ws.send(JSON.stringify({
+        this.ws.send(JSON.stringify({
             __Type: "InitialRes",
             Player: {
                 Name: name
@@ -68,14 +73,14 @@ const Websocket = function (ws) {
         }))
     }
 
-    //End of SEND RESPONSE FUNCTIONS
+    // End of SEND RESPONSE FUNCTIONS
 
     this.close = function () {
         console.log("Websocket closed!")
     }
 
     this.showErrors = function (status, errors) {
-        ws.send(JSON.stringify({
+        this.ws.send(JSON.stringify({
             Status: status,
             Errors: errors
         }))
