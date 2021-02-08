@@ -31,27 +31,28 @@ const Websocket = function (ws) {
                     break
             }
 
-        } else {//Invalid request
-            this.showErrors(DEFAULT_ERROR_TITLE, result.errors)
+        } else {//Unauthorized request
+            ws.send("Unauthorized request. The connection terminated!")
+            ws.terminate()//Unauthorized request
         }
     }
 
     //HANDLE FUNCTIONS
 
     this.handleInitialReq = function () {
-        let player = new Player(this.message.PlayerID)
-        let result = player.getStatus()
-
-        if (result.status) {//The player exists and isn't deleted
-            player.setWS(ws)//From now on the player can be verified with WS
-            this.sendInitialRes(result.player.name)
+        let player = new Player(ws)
+        let result = player.getMeByIDAndSet(message.PlayerID)
+        
+        if (!result.status) {//Unauthorized request
+            ws.terminate()
         } else {
-            this.showErrors(DEFAULT_ERROR_TITLE, result.errors)
+            this.sendInitialRes(result.player.name)
         }
+        
     }
 
     this.handleCreateRoomReq = function () {
-        
+        let player = new Player(0, ws)//Create a player instance just with WS
     }
 
     //End of HANDLE FUNCTIONS
