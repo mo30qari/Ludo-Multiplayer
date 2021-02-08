@@ -1,7 +1,7 @@
 const format = require("../config/request.json")
 const Validate = function () {
 
-    this.validateType = function (type) {//Every request has a __Type property that shows type of the request. This is always string...
+    this.validateType = function (type) {// Every request has a __Type property that shows type of the request. This is always string...
         let result = { status: true, errors: [] }
 
         type = type.trim()
@@ -78,7 +78,7 @@ const Validate = function () {
         return result
     }
 
-    this.validateObject = function (obj, props) {//It should be better in the near future. 
+    this.validateObject = function (obj, props) {// It should be better in the near future. 
         let result = { status: true, errors: [] }
 
         if (typeof obj != "object") {
@@ -103,15 +103,15 @@ const Validate = function () {
 
         let type = this.validateType(req.__Type)
 
-        if (type.status) {//__Type is valid
-            let structure = format[req.__Type] //request.json
+        if (type.status) {// __Type is valid
+            let structure = format[req.__Type] // request.json
             
             if (structure) {
-                let r //Template for saving methods returns
+                let r // Template for saving methods returns
 
-                for (const [key, value] of Object.entries(req)) {//Iterating in request
+                for (const [key, value] of Object.entries(req)) {// Iterating in request
 
-                    if (key != "__Type") {//The __Type is already checked.
+                    if (key != "__Type") {// The __Type is already checked.
 
                         switch (structure[key].type) {
                             case "string":
@@ -146,7 +146,7 @@ const Validate = function () {
 
                 }
             } else {
-                result.errors.push("The type of property doesn't exist!")
+                result.errors.push("The __Type of request doesn't exist!")
             }
             
         } else {
