@@ -24,14 +24,13 @@ app.get('/register/:username', function (req, res) {
     let result = valid.validateString(req.params["username"], 5, 20)
 
     if (result.status) {
-        let player = new Player(playerId)
+        let player = new Player(undefined, playerId, 1)
         res.write(JSON.stringify({
             status: true,
             player: player
         }))
 
         player.setName(req.params["username"])
-        player.addToPlayers()
 
     } else {
         res.write(JSON.stringify(result))
