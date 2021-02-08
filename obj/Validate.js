@@ -78,7 +78,7 @@ const Validate = function () {
         return result
     }
 
-    this.validateObject = function (obj, props) {//This is a too silly method to validate an object. It should be better in the near future. 
+    this.validateObject = function (obj, props) {//It should be better in the near future. 
         let result = { status: true, errors: [] }
 
         if (typeof obj != "object") {
@@ -105,44 +105,50 @@ const Validate = function () {
 
         if (type.status) {//__Type is valid
             let structure = format[req.__Type] //request.json
-            let r //Template for saving methods returns
+            
+            if (structure) {
+                let r //Template for saving methods returns
 
-            for (const [key, value] of Object.entries(req)) {//Iterating in request
+                for (const [key, value] of Object.entries(req)) {//Iterating in request
 
-                if (key != "__Type") {//The __Type is already checked.
+                    if (key != "__Type") {//The __Type is already checked.
 
-                    switch (structure[key].type) {
-                        case "string":
-                            r = this.validateString(value, structure[key].min, structure[key].max)
-                            if (!r.status) {
-                                result.errors.push(key + ": " + r.errors)
-                            }
-                            break
-                        case "number":
-                            r = this.validateNumber(value, structure[key].min, structure[key].max)
-                            if (!r.status) {
-                                result.errors.push(key + ": " + r.errors)
-                            }
-                            break
-                        case "bool":
-                            r = this.validateBool(value)
-                            if (!r.status) {
-                                result.errors.push(key + ": " + r.errors)
-                            }
-                            break
-                        case "object":
-                            r = this.validateObject(value, structure[key].properties)
-                            if (!r.status) {
-                                result.errors.push(key + ": " + r.errors)
-                            }
-                            break
-                        default:
-                            result.errors.push("The type of property doesn't exist!")
+                        switch (structure[key].type) {
+                            case "string":
+                                r = this.validateString(value, structure[key].min, structure[key].max)
+                                if (!r.status) {
+                                    result.errors.push(key + ": " + r.errors)
+                                }
+                                break
+                            case "number":
+                                r = this.validateNumber(value, structure[key].min, structure[key].max)
+                                if (!r.status) {
+                                    result.errors.push(key + ": " + r.errors)
+                                }
+                                break
+                            case "bool":
+                                r = this.validateBool(value)
+                                if (!r.status) {
+                                    result.errors.push(key + ": " + r.errors)
+                                }
+                                break
+                            case "object":
+                                r = this.validateObject(value, structure[key].properties)
+                                if (!r.status) {
+                                    result.errors.push(key + ": " + r.errors)
+                                }
+                                break
+                            default:
+                                result.errors.push("The type of property doesn't exist!")
+                        }
+
                     }
 
                 }
-
+            } else {
+                result.errors.push("The type of property doesn't exist!")
             }
+            
         } else {
             result.errors.push("__Type: " + type.errors)
         }
