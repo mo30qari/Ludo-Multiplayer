@@ -32,9 +32,7 @@ const Websocket = function (ws) {
             }
 
         } else {// Unauthorized request
-            result.message = "Unauthorized request. The connection terminated!"
-            this.ws.send(JSON.stringify(result))
-            this.ws.terminate()// Unauthorized request
+            this.terminateConnection(result, "Unauthorized request.")
         }
     }
 
@@ -42,22 +40,27 @@ const Websocket = function (ws) {
 
     this.handleInitialReq = function () {
         let player = new Player(undefined, this.message.PlayerID)
-        
+
         if (!player.id) {// Unauthorized request
             this.ws.send("Unauthorized user. The connection terminated!")
             this.ws.terminate()
-            //console.log(result.errors)
+            // console.log(result.errors)
         } else {
             let result = player.setWS(this.ws)// Relate user information sent via HTTPS and other information sent via Websocket
             this.sendInitialRes(player.name)
         }
-        
+
     }
 
     this.handleCreateRoomReq = function () {
         let player = new Player(this.ws)
-        console.log(player)
-        
+
+        if (player.ws) {// Player
+
+        } else {// The player is not found
+            this.terminateConnection(player,"Unauthorized user.")
+        }
+
     }
 
     // End of HANDLE FUNCTIONS
@@ -84,6 +87,12 @@ const Websocket = function (ws) {
             Status: status,
             Errors: errors
         }))
+    }
+
+    this.terminateConnection = function (result, message) {
+        result.message = message + " The connection terminated!"
+        this.ws.send(JSON.stringify(result))
+        this.ws.terminate()
     }
 
 }
