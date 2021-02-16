@@ -1,6 +1,6 @@
-const Room = function(){
+const Room = function(creator){
 
-    this.id;
+    this.creator = creator
 
 }
 

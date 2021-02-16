@@ -20,6 +20,8 @@ app.get('/register/:username', function (req, res) {
     // let playerId = parseInt(Math.random() * 1000000)
     let playerId = 5485835
     //
+    
+    //This part should be implemented in <Player>
 
     let result = valid.validateString(req.params["username"], 5, 20)
 

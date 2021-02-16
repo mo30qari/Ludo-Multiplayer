@@ -55,8 +55,8 @@ const Websocket = function (ws) {
     this.handleCreateRoomReq = function () {
         let player = new Player(this.ws)
 
-        if (player.ws) {// Player
-
+        if (player.ws) {// Player is found
+            let room = new room(player)
         } else {// The player is not found
             this.terminateConnection(player,"Unauthorized user.")
         }
