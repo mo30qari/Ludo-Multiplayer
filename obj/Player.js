@@ -1,17 +1,17 @@
 const Database = require("./Database").Database
 let db = new Database()
-let onlinePlayers = []
-
-const Player = function (ws, id = undefined, newUser = 0) {
+let onlinePlayers = []    
+    
+const Player = function (ws, id = undefined) {
 
     this.ws = ws
     this.id = id
 
-    if (id && newUser) {
-        db.insertPlayer(this)
+    if (!ws && !id) {// New player
+        this.id = db.insertPlayer(this)
         
-    } else if (id && !newUser) {
-        let result = db.getPlayerByID(this.id)
+    } else if (!ws && id) {// The player wants to register to websocket
+        let result = db.getPlayerById(this.id)
 
         if (result.status) {
             this.name = result.player.name
@@ -19,8 +19,8 @@ const Player = function (ws, id = undefined, newUser = 0) {
             return result
         }
     }
-    else if (ws) {
-        let result = db.getPlayerByWS(this.ws)
+    else if (ws) {// Old player
+        let result = db.getPlayerByWs(this.ws)
 
         if (result.status) {
             this.name = result.player.name

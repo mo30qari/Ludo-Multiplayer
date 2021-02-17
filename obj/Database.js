@@ -4,10 +4,15 @@ const Database = function (){
     this.rooms = []
     
     this.insertPlayer = function (player) {
+        // let playerId = parseInt(Math.random() * 1000000)
+        let playerId = 5485835
+        player.id = playerId
         this.players.push(player)
+        
+        return player.id
     }
     
-    this.getPlayerByID = function (id) {
+    this.getPlayerById = function (id) {
         let result = { status: true, errors: [] }
         let player = this.players.find(e => e.id === id)
         
@@ -26,7 +31,7 @@ const Database = function (){
         return result
     }
     
-    this.getPlayerByWS = function (ws) {
+    this.getPlayerByWs = function (ws) {
         let result = { status: true, errors: [] }
         let player = this.players.find(e => e.ws === ws)
         

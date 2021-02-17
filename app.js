@@ -16,17 +16,10 @@ app.get('/', function (req, res) {
 app.get('/register/:username', function (req, res) {
     res.setHeader('Content-Type', 'application/json')
 
-    //BEBUG
-    // let playerId = parseInt(Math.random() * 1000000)
-    let playerId = 5485835
-    //
-    
-    //This part should be implemented in <Player>
-
     let result = valid.validateString(req.params["username"], 5, 20)
 
     if (result.status) {
-        let player = new Player(undefined, playerId, 1)
+        let player = new Player(undefined)
         res.write(JSON.stringify({
             status: true,
             player: player
