@@ -4,4 +4,4 @@ const Room = function(creator){
 
 }
 
-exports.Room = Room;
+exports.Room = Room

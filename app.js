@@ -4,7 +4,7 @@ const Player = require("./obj/Player").Player
 const Room = require("./obj/Room").Room
 const Validate = require("./obj/Validate").Validate
 const WebSocketServer = require("ws").Server
-const wss = new WebSocketServer({ port: 8090 })
+const wss = new WebSocketServer({port: 8090})
 const WS = require("./obj/Websocket").Websocket
 
 let valid = new Validate()
@@ -30,7 +30,6 @@ app.get('/register/:username', function (req, res) {
     } else {
         res.write(JSON.stringify(result))
     }
-
     res.end()
 })
 
@@ -38,8 +37,12 @@ wss.on('connection', function (ws, req, client) {
     let socket = new WS(ws)
 
     ws.onopen = socket.open()
-    ws.on('message', function (message) { socket.handleMessage(message) })
-    ws.on('close', function () { socket.close() })
+    ws.on('message', function (message) {
+        socket.handleMessage(message)
+    })
+    ws.on('close', function () {
+        socket.close()
+    })
 })
 
 app.listen(8080)
