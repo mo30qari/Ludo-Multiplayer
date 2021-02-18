@@ -1,12 +1,10 @@
 const Validate = require("./Validate").Validate
 const Player = require("./Player").Player
-
-const DEFAULT_ERROR_TITLE = "Your request has been rejected due to following errors:"
+const Room = require("./Room").Room
 
 const Websocket = function (ws) {
 
     this.ws = ws
-    this.message
 
     this.open = function () {
         this.ws.send("Websocket connected on port :8090...")
@@ -56,7 +54,7 @@ const Websocket = function (ws) {
         let player = new Player(this.ws)
 
         if (player.ws) {// Player is found
-            let room = new room(player)
+            let room = new Room(player)
         } else {// The player is not found
             this.terminateConnection(player,"Unauthorized user.")
         }

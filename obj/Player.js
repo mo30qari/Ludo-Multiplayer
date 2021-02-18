@@ -48,9 +48,9 @@ const Player = function (ws, id = undefined) {
 
     this.getMe = function () {//Shows a player is active and true or not
         if (onlinePlayers.includes(this)) {
-            return {player: this}//Standard DB format
+            return {player: this}//Based on DB format
         } else {
-            return db.getPlayerByID(this.id)
+            return db.getPlayerById(this.id)
         }
     }
 

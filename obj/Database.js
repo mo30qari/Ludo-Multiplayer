@@ -4,9 +4,8 @@ const Database = function (){
     this.rooms = []
     
     this.insertPlayer = function (player) {
-        // let playerId = parseInt(Math.random() * 1000000)
-        let playerId = 5485835
-        player.id = playerId
+        // player.id = parseInt(Math.random() * 1000000)
+        player.id = 5485835
         this.players.push(player)
         
         return player.id
