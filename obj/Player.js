@@ -4,57 +4,57 @@ let onlinePlayers = []
 
 const Player = function (ws, id = undefined) {
 
-    this.ws = ws
-    this.id = id
+	this.ws = ws
+	this.id = id
 
-    if (!ws && !id) {// New player
-        this.id = db.insertPlayer(this)
+	if (!ws && !id) {// New player
+		this.id = db.insertPlayer(this)
 
-    } else if (!ws && id) {// The player wants to register to websocket
-        let result = db.getPlayerById(this.id)
+	} else if (!ws && id) {// The player wants to register to websocket
+		let result = db.getPlayerById(this.id)
 
-        if (result.status) {
-            this.name = result.player.name
-        } else {
-            return result
-        }
-    } else if (ws) {// Old player
-        let result = db.getPlayerByWs(this.ws)
+		if (result.status) {
+			this.name = result.player.name
+		} else {
+			return result
+		}
+	} else if (ws) {// Old player
+		let result = db.getPlayerByWs(this.ws)
 
-        if (result.status) {
-            this.name = result.player.name
-            this.id = result.player.id
-        } else {
-            return result
-        }
-    }
+		if (result.status) {
+			this.name = result.player.name
+			this.id = result.player.id
+		} else {
+			return result
+		}
+	}
 
-    // SET FUNCTIONS
+	// SET FUNCTIONS
 
-    this.setName = function (name) {
-        this.name = name
-        db.updatePlayer(this, "name", name)
-    }
+	this.setName = function (name) {
+		this.name = name
+		db.updatePlayer(this, "name", name)
+	}
 
-    this.setWS = function (ws) {
-        this.ws = ws
-        db.updatePlayer(this, "ws", this.ws)// <ws> was got when the instance was created
-        onlinePlayers.push(this)// The online players should be registered in <onlinePlayers> to fast access
-    }
+	this.setWS = function (ws) {
+		this.ws = ws
+		db.updatePlayer(this, "ws", this.ws)// <ws> was got when the instance was created
+		onlinePlayers.push(this)// The online players should be registered in <onlinePlayers> to fast access
+	}
 
-    // End of SET FUNCTIONS
+	// End of SET FUNCTIONS
 
-    // GET FUNCTIONS
+	// GET FUNCTIONS
 
-    this.getMe = function () {//Shows a player is active and true or not
-        if (onlinePlayers.includes(this)) {
-            return {player: this}//Based on DB format
-        } else {
-            return db.getPlayerById(this.id)
-        }
-    }
+	this.getMe = function () {//Shows a player is active and true or not
+		if (onlinePlayers.includes(this)) {
+			return {player: this}//Based on DB format
+		} else {
+			return db.getPlayerById(this.id)
+		}
+	}
 
-    // End of GET FUNCTIONS
+	// End of GET FUNCTIONS
 
 }
 

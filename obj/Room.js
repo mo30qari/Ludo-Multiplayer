@@ -1,6 +1,6 @@
 const Room = function (creator) {
 
-    this.creator = creator
+	this.creator = creator
 
 }
 
