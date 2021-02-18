@@ -1,4 +1,4 @@
-const Room = function(creator){
+const Room = function (creator) {
 
     this.creator = creator
 
