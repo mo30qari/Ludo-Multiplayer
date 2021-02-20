@@ -3,6 +3,7 @@ const Database = function () {
 	this.players = []
 	this.rooms = []
 
+	/*PLAYER FUNCTIONS*/
 	this.insertPlayer = function (player) {
 		// player.id = parseInt(Math.random() * 1000000)
 		player.id = 5485835
@@ -69,6 +70,34 @@ const Database = function () {
 
 		return result
 
+	}
+	/*End of PLAYER FUNCTIONS*/
+
+	this.insertRoom = function (room) {
+		// room.id = parseInt(Math.random() * 1000000)
+		room.id = 3215854
+		this.rooms.push(room)
+
+		return room.id
+	}
+
+	this.getRoom = function (id) {
+		let result = {status: true, errors: []}
+		let room = this.rooms.find(e => e.id === id)
+
+		if (!room) {
+			result.errors.push("The player doesn't exist")
+		} else if (room.deleted) {
+			result.errors.push("The player was deleted")
+		}
+
+		if (result.errors.length) {
+			result.status = false
+		} else {
+			result.player = room
+		}
+
+		return result
 	}
 
 }

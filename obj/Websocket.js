@@ -40,11 +40,9 @@ const Websocket = function (ws) {
 		let player = new Player(undefined, this.message.PlayerID)
 
 		if (!player.id) {// Unauthorized request
-			this.ws.send("Unauthorized user. The connection terminated!")
-			this.ws.terminate()
-			// console.log(result.errors)
+			this.terminateConnection(player, "Unauthorized user. The connection terminated!")
 		} else {
-			let result = player.setWS(this.ws)// Relate user information sent via HTTPS and other information sent via Websocket
+			player.setWS(this.ws)// Relate user information sent via HTTPS and other information sent via Websocket
 			this.sendInitialRes(player.name)
 		}
 
@@ -53,9 +51,15 @@ const Websocket = function (ws) {
 	this.handleCreateRoomReq = function () {
 		let player = new Player(this.ws)
 
-		if (player.ws) {// Player is found
+		if (player.ws) {// Player is found!
 			let room = new Room(player)
-		} else {// The player is not found
+
+			if(room.id) {
+
+			} else {// The room is not found!
+				this.terminateConnection(player, "The room doesn't exist.")
+			}
+		} else {// The player is not found!
 			this.terminateConnection(player, "Unauthorized user.")
 		}
 
