@@ -6,13 +6,13 @@ const Player = function (ws, id = undefined) {
 
 	this.ws = ws
 	this.id = id
+	this.deleted = 0
 
 	if (!this.ws && !this.id) {// New player
 		this.id = db.insertPlayer(this)
 
 	} else if (!this.ws && this.id) {// The player wants to register to websocket
 		let result = db.getPlayerById(this.id)
-
 
 		if (result.status) {
 			this.name = result.player.name
@@ -34,12 +34,16 @@ const Player = function (ws, id = undefined) {
 
 	this.setName = function (name) {
 		this.name = name
-		db.updatePlayer(this, "name", name)
+		db.updatePlayer(this, {
+			name: name
+		})
 	}
 
 	this.setWS = function (ws) {
 		this.ws = ws
-		db.updatePlayer(this, "ws", this.ws)// <ws> was got when the instance was created
+		db.updatePlayer(this, {
+			ws: this.ws
+		})// <ws> was got when the instance was created
 		onlinePlayers.push(this)// The online players should be registered in <onlinePlayers> to fast access
 	}
 

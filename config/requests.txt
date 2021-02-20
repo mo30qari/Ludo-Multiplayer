@@ -10,7 +10,7 @@
 	"Settings": {
 		"SafeSquares": true,
 		"Capacity": 3,
-		"firstTurnExit": false
+		"FirstTurnExit": false
 	}
 }
 

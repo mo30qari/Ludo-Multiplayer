@@ -52,10 +52,15 @@ const Websocket = function (ws) {
 		let player = new Player(this.ws)
 
 		if (player.ws) {// Player is found!
-			let room = new Room(player)
+			let room = new Room(player, undefined, {
+				capacity: 4,
+				safeSquares: false,
+				firstTurnExit: false
+			}) //Create room
 
-			if(room.id) {
-
+			if(room.id) {// The room is ready for players to join
+				console.log("A room has been added to the rooms list...")
+				console.log(room)
 			} else {// The room is not found!
 				this.terminateConnection(player, "The room doesn't exist.")
 			}

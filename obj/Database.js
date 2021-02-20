@@ -50,7 +50,7 @@ const Database = function () {
 		return result
 	}
 
-	this.updatePlayer = function (ply, key, value) {
+	this.updatePlayer = function (ply, props) {
 		let result = {status: true, errors: []}
 		let player = this.players.find(e => e.id === ply.id)
 
@@ -59,7 +59,9 @@ const Database = function () {
 		} else if (player.deleted) {
 			result.errors.push("The player was deleted")
 		} else {
-			player[key] = value
+			for(const [key, value] of Object.entries(props)) {
+				player[key] = value
+			}
 		}
 
 		if (result.errors.length) {
@@ -69,7 +71,6 @@ const Database = function () {
 		}
 
 		return result
-
 	}
 	/*End of PLAYER FUNCTIONS*/
 
@@ -95,6 +96,29 @@ const Database = function () {
 			result.status = false
 		} else {
 			result.player = room
+		}
+
+		return result
+	}
+
+	this.updateRoom = function (rom, props) {
+		let result = {status: true, errors: []}
+		let room = this.rooms.find(e => e.id === rom.id)
+
+		if (!room) {
+			result.errors.push("The room doesn't exist")
+		} else if (room.deleted) {
+			result.errors.push("The room was deleted")
+		} else {
+			for(const [key, value] of Object.entries(props)) {
+				room[key] = value
+			}
+		}
+
+		if (result.errors.length) {
+			result.status = false
+		} else {
+			result.room = room
 		}
 
 		return result

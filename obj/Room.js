@@ -1,9 +1,12 @@
 const Database = require("./Database").Database
 let db = new Database()
-const Room = function (creator, id = undefined) {
+
+const Room = function (creator, id = undefined, settings) {
 
 	this.creator = creator
 	this.id = id
+	this.settings = settings
+	this.deleted = 0
 
 	if (this.creator && !this.id) {// New room
 		this.id = db.insertRoom(this)

@@ -12,7 +12,7 @@
       "properties": [
         "Capacity",
         "SafeSquares",
-        "firstTurnExit"
+        "FirstTurnExit"
       ]
     }
   },
