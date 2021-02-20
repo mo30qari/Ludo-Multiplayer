@@ -7,18 +7,19 @@ const Player = function (ws, id = undefined) {
 	this.ws = ws
 	this.id = id
 
-	if (!ws && !id) {// New player
+	if (!this.ws && !this.id) {// New player
 		this.id = db.insertPlayer(this)
 
-	} else if (!ws && id) {// The player wants to register to websocket
+	} else if (!this.ws && this.id) {// The player wants to register to websocket
 		let result = db.getPlayerById(this.id)
+
 
 		if (result.status) {
 			this.name = result.player.name
 		} else {
 			return result
 		}
-	} else if (ws) {// Old player
+	} else if (this.ws) {// Old player
 		let result = db.getPlayerByWs(this.ws)
 
 		if (result.status) {
