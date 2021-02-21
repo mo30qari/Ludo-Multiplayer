@@ -5,8 +5,8 @@ const Database = function () {
 
 	/*PLAYER FUNCTIONS*/
 	this.insertPlayer = function (player) {
-		// player.id = parseInt(Math.random() * 1000000)
-		player.id = 5485835
+		player.id = Math.floor(1000000 + Math.random() * 9000000)
+		// player.id = 5485835
 		this.players.push(player)
 
 		return player.id
@@ -75,8 +75,8 @@ const Database = function () {
 	/*End of PLAYER FUNCTIONS*/
 
 	this.insertRoom = function (room) {
-		// room.id = parseInt(Math.random() * 1000000)
-		room.id = 3215854
+		room.id = Math.floor(1000000 + Math.random() * 9000000)
+		// room.id = 3215854
 		this.rooms.push(room)
 
 		return room.id

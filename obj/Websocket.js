@@ -2,6 +2,8 @@ const Validate = require("./Validate").Validate
 const Player = require("./Player").Player
 const Room = require("./Room").Room
 
+let onlinePlayers = []// Keeps the players who are listening to the websocket.
+
 const Websocket = function (ws) {
 
 	this.ws = ws
@@ -43,6 +45,7 @@ const Websocket = function (ws) {
 			this.terminateConnection(player, "Unauthorized user. The connection terminated!")
 		} else {
 			player.setWS(this.ws)// Relate user information sent via HTTPS and other information sent via Websocket
+			onlinePlayers.push(player)// The online players should be registered in <onlinePlayers> in order to fast access
 			this.sendInitialRes(player.name)
 		}
 
@@ -58,9 +61,9 @@ const Websocket = function (ws) {
 				firstTurnExit: false
 			}) //Create room
 
-			if(room.id) {// The room is ready for players to join
-				console.log("A room has been added to the rooms list...")
-				console.log(room)
+			if (room.id) {// The room is ready for players to join
+				console.log("A room has been added to the rooms list by " + player.name)
+				this.sendCreateRoomRes(player.name, room)
 			} else {// The room is not found!
 				this.terminateConnection(player, "The room doesn't exist.")
 			}
@@ -83,17 +86,23 @@ const Websocket = function (ws) {
 		}))
 	}
 
+	this.sendCreateRoomRes = function (creatorName, room) {
+		onlinePlayers.forEach(function (player) {
+			player.ws.send(JSON.stringify({
+				__Type: "CreateRoomRes",
+				Room: {
+					Creator: creatorName,
+					Settings: room.settings,
+					Players: room.players.length
+				}
+			}))
+		})
+	}
+
 	// End of SEND RESPONSE FUNCTIONS
 
 	this.close = function () {
 		console.log("Websocket closed!")
-	}
-
-	this.showErrors = function (status, errors) {
-		this.ws.send(JSON.stringify({
-			Status: status,
-			Errors: errors
-		}))
 	}
 
 	this.terminateConnection = function (result, message) {

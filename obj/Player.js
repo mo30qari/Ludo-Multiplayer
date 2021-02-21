@@ -1,12 +1,18 @@
 const Database = require("./Database").Database
 let db = new Database()
-let onlinePlayers = []
 
 const Player = function (ws, id = undefined) {
 
 	this.ws = ws
 	this.id = id
 	this.deleted = 0
+	this.state = "init"
+	/*
+		The player's states are:
+		1. init: The player has just entered the game and he is doing register progress.
+		2. wait: The player registered successfully and now he is waiting to join a game.
+		3. play: The player is playing a game.
+	*/
 
 	if (!this.ws && !this.id) {// New player
 		this.id = db.insertPlayer(this)
@@ -41,25 +47,13 @@ const Player = function (ws, id = undefined) {
 
 	this.setWS = function (ws) {
 		this.ws = ws
+		this.state = "wait"
 		db.updatePlayer(this, {
 			ws: this.ws
 		})// <ws> was got when the instance was created
-		onlinePlayers.push(this)// The online players should be registered in <onlinePlayers> to fast access
 	}
 
 	// End of SET FUNCTIONS
-
-	// GET FUNCTIONS
-
-	this.getMe = function () {//Shows a player is active and true or not
-		if (onlinePlayers.includes(this)) {
-			return {player: this}//Based on DB format
-		} else {
-			return db.getPlayerById(this.id)
-		}
-	}
-
-	// End of GET FUNCTIONS
 
 }
 

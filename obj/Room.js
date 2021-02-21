@@ -7,6 +7,7 @@ const Room = function (creator, id = undefined, settings) {
 	this.id = id
 	this.settings = settings
 	this.deleted = 0
+	this.players = []
 
 	if (this.creator && !this.id) {// New room
 		this.id = db.insertRoom(this)
