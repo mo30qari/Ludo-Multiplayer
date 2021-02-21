@@ -95,7 +95,7 @@ const Database = function () {
 		if (result.errors.length) {
 			result.status = false
 		} else {
-			result.player = room
+			result.room = room
 		}
 
 		return result

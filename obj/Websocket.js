@@ -29,6 +29,9 @@ const Websocket = function (ws) {
 				case "CreateRoomReq": // When player creates a room
 					this.handleCreateRoomReq()
 					break
+				case "JoinToRoomReq": //A player wants to join a room
+					this.handleJoinToRoomReq()
+					break
 			}
 
 		} else {// Unauthorized request
@@ -73,6 +76,23 @@ const Websocket = function (ws) {
 
 	}
 
+	this.handleJoinToRoomReq = function () {
+		let player = new Player(this.ws)
+
+		if (player.ws) {// Player is found!
+			let room = new Room(undefined, this.message.RoomID)// Find room by id
+
+			if (room.id) {// Room is found!
+				room.joinPlayer(this.message.PlayerID)
+				this.sendJoinToRoomRes(player, room)
+			} else {// The room is not found!
+				this.terminateConnection(player, "The room doesn't exist.")
+			}
+		} else {// The player is not found!
+			this.terminateConnection(player, "Unauthorized user.")
+		}
+	}
+
 	// End of HANDLE FUNCTIONS
 
 	// SEND RESPONSE FUNCTIONS
@@ -98,6 +118,18 @@ const Websocket = function (ws) {
 				}
 			}))
 		})
+	}
+
+	this.sendJoinToRoomRes = function (player, room) {
+		player.ws.send(JSON.stringify({
+			__Type: "JoinToRoomRes",
+			Settings: room.settings,
+			PlayerNumber: room.players.findIndex(e => e === player.id) + 1,
+			Player: {
+				NickName: player.name,
+				Avatar: player.avatar
+			}
+		}))
 	}
 
 	// End of SEND RESPONSE FUNCTIONS

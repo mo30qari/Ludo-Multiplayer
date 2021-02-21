@@ -13,6 +13,7 @@ const Player = function (ws, id = undefined) {
 		2. wait: The player registered successfully and now he is waiting to join a game.
 		3. play: The player is playing a game.
 	*/
+	this.avatar = 1
 
 	if (!this.ws && !this.id) {// New player
 		this.id = db.insertPlayer(this)
