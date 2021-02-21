@@ -124,6 +124,24 @@ const Database = function () {
 		return result
 	}
 
+	this.getAllWaitingRooms = function () {
+		let temp = []
+		console.log(this.rooms)
+		this.rooms.forEach(function (room) {
+			console.log(room.players.length + "<>" + room.settings.Capacity)
+			if (room.players.length < room.settings.Capacity) {
+				temp.push({
+					id: room.id,
+					Creator: room.creator.name,
+					Settings: room.settings,
+					Players: room.players
+				})
+			}
+		})
+
+		return temp
+	}
+
 }
 
 exports.Database = Database

@@ -1,6 +1,8 @@
 const Validate = require("./Validate").Validate
 const Player = require("./Player").Player
 const Room = require("./Room").Room
+const Database = require("./Database").Database
+let db = new Database()
 
 let onlinePlayers = []// Keeps the players who are listening to the websocket.
 
@@ -49,7 +51,8 @@ const Websocket = function (ws) {
 		} else {
 			player.setWS(this.ws)// Relate user information sent via HTTPS and other information sent via Websocket
 			onlinePlayers.push(player)// The online players should be registered in <onlinePlayers> in order to fast access
-			this.sendInitialRes(player.name)
+			this.sendInitialRes(player.name)// To the player
+			this.sendRoomsListUpdate(player)// To all waiting players
 		}
 
 	}
@@ -66,7 +69,8 @@ const Websocket = function (ws) {
 
 			if (room.id) {// The room is ready for players to join
 				console.log("A room has been added to the rooms list by " + player.name)
-				this.sendCreateRoomRes(player, room)
+				this.sendCreateRoomRes(room)// To the room's creator
+				this.sendCreateRoomUpdate(room)// To all waiting players except the player
 			} else {// The room is not found!
 				this.terminateConnection(player, "The room doesn't exist.")
 			}
@@ -85,6 +89,7 @@ const Websocket = function (ws) {
 			if (room.id) {// Room is found!
 				room.joinPlayer(this.message.PlayerID)
 				this.sendJoinToRoomRes(player, room)
+				this.sendJoinToRoomUpdate(room, player)
 			} else {// The room is not found!
 				this.terminateConnection(player, "The room doesn't exist.")
 			}
@@ -106,18 +111,39 @@ const Websocket = function (ws) {
 		}))
 	}
 
-	this.sendCreateRoomRes = function (creator, room) {
+	this.sendRoomsListUpdate = function (player) {// Sends a list of rooms with details to the players with state of "wait"
+		player.ws.send(JSON.stringify({
+			__Type: "RoomsListUpdate",
+			Rooms: db.getAllWaitingRooms()
+		}))
+	}
+
+	this.sendCreateRoomRes = function (room) {
+		room.creator.ws.send(JSON.stringify({
+			__Type: "CreateRoomRes",
+			Room: {
+				id: room.id,
+				Creator: room.creator.name,
+				Settings: room.settings,
+				Players: room.players
+			}
+		}))
+	}
+
+	this.sendCreateRoomUpdate = function (room) {
 		onlinePlayers.forEach(function (player) {
-			if (player.state === "wait") {// Sending to players who are seeking for a room to join.
+			if (player.state === "wait" && player.id !== room.creator.id) {// Sending to players who are seeking for a room to join.
 				player.ws.send(JSON.stringify({
-					__Type: "CreateRoomRes",
+					__Type: "CreateRoomUpdate",
 					Room: {
 						id: room.id,
-						Creator: creator.name,
+						Creator: room.creator.name,
 						Settings: room.settings,
 						Players: room.players
 					}
 				}))
+			} else {
+				console.log("self!")
 			}
 		})
 	}
@@ -132,6 +158,18 @@ const Websocket = function (ws) {
 				Avatar: player.avatar
 			}
 		}))
+	}
+
+	this.sendJoinToRoomUpdate = function (room, ply) {
+		onlinePlayers.forEach(function (player) {
+			if (player.state === "wait" && player.id !== ply.id) {// Sending to players who are seeking for a room to join.
+				player.ws.send(JSON.stringify({
+					__Type: "JoinToRoomUpdate",
+					RoomID: room.id,
+					Players: room.players.length
+				}))
+			}
+		})
 	}
 
 	// End of SEND RESPONSE FUNCTIONS
