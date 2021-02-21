@@ -108,15 +108,17 @@ const Websocket = function (ws) {
 
 	this.sendCreateRoomRes = function (creator, room) {
 		onlinePlayers.forEach(function (player) {
-			player.ws.send(JSON.stringify({
-				__Type: "CreateRoomRes",
-				Room: {
-					id: room.id,
-					Creator: creator.name,
-					Settings: room.settings,
-					Players: room.players
-				}
-			}))
+			if (player.state === "wait") {// Sending to players who are seeking for a room to join.
+				player.ws.send(JSON.stringify({
+					__Type: "CreateRoomRes",
+					Room: {
+						id: room.id,
+						Creator: creator.name,
+						Settings: room.settings,
+						Players: room.players
+					}
+				}))
+			}
 		})
 	}
 
