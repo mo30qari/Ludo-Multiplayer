@@ -56,14 +56,14 @@ const Websocket = function (ws) {
 
 		if (player.ws) {// Player is found!
 			let room = new Room(player, undefined, {
-				capacity: 4,
-				safeSquares: false,
-				firstTurnExit: false
+				Capacity: this.message.Settings.Capacity,
+				SafeSquares: this.message.Settings.SafeSquares,
+				FirstTurnExit: this.message.Settings.FirstTurnExit
 			}) //Create room
 
 			if (room.id) {// The room is ready for players to join
 				console.log("A room has been added to the rooms list by " + player.name)
-				this.sendCreateRoomRes(player.name, room)
+				this.sendCreateRoomRes(player, room)
 			} else {// The room is not found!
 				this.terminateConnection(player, "The room doesn't exist.")
 			}
@@ -86,14 +86,15 @@ const Websocket = function (ws) {
 		}))
 	}
 
-	this.sendCreateRoomRes = function (creatorName, room) {
+	this.sendCreateRoomRes = function (creator, room) {
 		onlinePlayers.forEach(function (player) {
 			player.ws.send(JSON.stringify({
 				__Type: "CreateRoomRes",
 				Room: {
-					Creator: creatorName,
+					id: room.id,
+					Creator: creator.name,
 					Settings: room.settings,
-					Players: room.players.length
+					Players: room.players
 				}
 			}))
 		})
