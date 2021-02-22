@@ -122,7 +122,7 @@ const Websocket = function (ws) {
 		room.creator.ws.send(JSON.stringify({
 			__Type: "CreateRoomRes",
 			Room: {
-				id: room.id,
+				ID: room.id,
 				Creator: room.creator.name,
 				Settings: room.settings,
 				Players: room.players
@@ -136,7 +136,7 @@ const Websocket = function (ws) {
 				player.ws.send(JSON.stringify({
 					__Type: "CreateRoomUpdate",
 					Room: {
-						id: room.id,
+						ID: room.id,
 						Creator: room.creator.name,
 						Settings: room.settings,
 						Players: room.players
