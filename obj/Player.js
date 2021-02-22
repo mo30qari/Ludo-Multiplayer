@@ -7,12 +7,6 @@ const Player = function (ws, id = undefined) {
 	this.id = id
 	this.deleted = 0
 	this.state = "init"
-	/*
-		The player's states are:
-		1. init: The player has just entered the game and he is doing register progress.
-		2. wait: The player registered successfully and now he is waiting to join a game.
-		3. play: The player is playing a game.
-	*/
 	this.avatar = 1
 
 	if (!this.ws && !this.id) {// New player
@@ -48,13 +42,19 @@ const Player = function (ws, id = undefined) {
 
 	this.setWS = function (ws) {
 		this.ws = ws
-		this.state = "wait"
 		db.updatePlayer(this, {
 			ws: this.ws
 		})// <ws> was got when the instance was created
 	}
 
 	// End of SET FUNCTIONS
+
+	this.update = function (props) {
+		for (const [key, value] of Object.entries(props)) {
+			this[key] = value
+		}
+
+	}
 
 }
 

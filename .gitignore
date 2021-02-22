@@ -1,1 +1,4 @@
 node_modules/
+/players.json
+/rooms.json
+/onlinePlayers.json

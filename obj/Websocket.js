@@ -1,10 +1,10 @@
 const Validate = require("./Validate").Validate
 const Player = require("./Player").Player
 const Room = require("./Room").Room
+const OnlinePlayers = require("./OnlinePlayers").OnlinePlayers
+let onlinePlayers = new OnlinePlayers()
 const Database = require("./Database").Database
 let db = new Database()
-
-let onlinePlayers = []// Keeps the players who are listening to the websocket.
 
 const Websocket = function (ws) {
 
@@ -50,7 +50,10 @@ const Websocket = function (ws) {
 			this.terminateConnection(player, "Unauthorized user. The connection terminated!")
 		} else {
 			player.setWS(this.ws)// Relate user information sent via HTTPS and other information sent via Websocket
-			onlinePlayers.push(player)// The online players should be registered in <onlinePlayers> in order to fast access
+			onlinePlayers.add(player)// The online players should be registered in <onlinePlayers> in order to fast access
+			onlinePlayers.update(player, {
+				state: "wait"
+			})// Set player's state in <OnlinePlayers>
 			this.sendInitialRes(player.name)// To the player
 			this.sendRoomsListUpdate(player)// To all waiting players
 		}
@@ -88,6 +91,9 @@ const Websocket = function (ws) {
 
 			if (room.id) {// Room is found!
 				room.joinPlayer(this.message.PlayerID)
+				onlinePlayers.update(player, {
+					state: "play"
+				}) //Changing the player state to play means he is in the game and room create or update updates no longer sent to him
 				this.sendJoinToRoomRes(player, room)
 				this.sendJoinToRoomUpdate(room, player)
 			} else {// The room is not found!
@@ -131,7 +137,7 @@ const Websocket = function (ws) {
 	}
 
 	this.sendCreateRoomUpdate = function (room) {
-		onlinePlayers.forEach(function (player) {
+		onlinePlayers.list().forEach(function (player) {
 			if (player.state === "wait" && player.id !== room.creator.id) {// Sending to players who are seeking for a room to join.
 				player.ws.send(JSON.stringify({
 					__Type: "CreateRoomUpdate",
@@ -142,8 +148,6 @@ const Websocket = function (ws) {
 						Players: room.players
 					}
 				}))
-			} else {
-				console.log("self!")
 			}
 		})
 	}
@@ -161,7 +165,7 @@ const Websocket = function (ws) {
 	}
 
 	this.sendJoinToRoomUpdate = function (room, ply) {
-		onlinePlayers.forEach(function (player) {
+		onlinePlayers.list().forEach(function (player) {
 			if (player.state === "wait" && player.id !== ply.id) {// Sending to players who are seeking for a room to join.
 				player.ws.send(JSON.stringify({
 					__Type: "JoinToRoomUpdate",
