@@ -1,20 +1,20 @@
-const Database = function () {
+PLAYERS = []
+ROOMS = []
 
-	this.players = []
-	this.rooms = []
+const Database = function () {
 
 	/*PLAYER FUNCTIONS*/
 	this.insertPlayer = function (player) {
 		player.id = Math.floor(1000000 + Math.random() * 9000000)
 		// player.id = 5485835
-		this.players.push(player)
+		PLAYERS.push(player)
 
 		return player.id
 	}
 
 	this.getPlayerById = function (id) {
 		let result = {status: true, errors: []}
-		let player = this.players.find(e => e.id === id)
+		let player = PLAYERS.find(e => e.id === id)
 
 		if (!player) {
 			result.errors.push("The player doesn't exist")
@@ -33,7 +33,7 @@ const Database = function () {
 
 	this.getPlayerByWs = function (ws) {
 		let result = {status: true, errors: []}
-		let player = this.players.find(e => e.ws === ws)
+		let player = PLAYERS.find(e => e.ws === ws)
 
 		if (!player) {
 			result.errors.push("The player doesn't exist")
@@ -52,7 +52,7 @@ const Database = function () {
 
 	this.updatePlayer = function (ply, props) {
 		let result = {status: true, errors: []}
-		let player = this.players.find(e => e.id === ply.id)
+		let player = PLAYERS.find(e => e.id === ply.id)
 
 		if (!player) {
 			result.errors.push("The player doesn't exist")
@@ -77,14 +77,14 @@ const Database = function () {
 	this.insertRoom = function (room) {
 		room.id = Math.floor(1000000 + Math.random() * 9000000)
 		// room.id = 3215854
-		this.rooms.push(room)
+		ROOMS.push(room)
 
 		return room.id
 	}
 
 	this.getRoom = function (id) {
 		let result = {status: true, errors: []}
-		let room = this.rooms.find(e => e.id === id)
+		let room = ROOMS.find(e => e.id === id)
 
 		if (!room) {
 			result.errors.push("The player doesn't exist")
@@ -103,7 +103,7 @@ const Database = function () {
 
 	this.updateRoom = function (rom, props) {
 		let result = {status: true, errors: []}
-		let room = this.rooms.find(e => e.id === rom.id)
+		let room = ROOMS.find(e => e.id === rom.id)
 
 		if (!room) {
 			result.errors.push("The room doesn't exist")
@@ -125,12 +125,11 @@ const Database = function () {
 	}
 
 	this.getAllWaitingRooms = function () {
-		let temp = []
-		console.log(this.rooms)
-		this.rooms.forEach(function (room) {
-			console.log(room.players.length + "<>" + room.settings.Capacity)
+		let result = []
+
+		ROOMS.forEach(function (room) {
 			if (room.players.length < room.settings.Capacity) {
-				temp.push({
+				result.push({
 					id: room.id,
 					Creator: room.creator.name,
 					Settings: room.settings,
@@ -139,7 +138,7 @@ const Database = function () {
 			}
 		})
 
-		return temp
+		return result
 	}
 
 }
