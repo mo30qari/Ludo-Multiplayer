@@ -20,6 +20,7 @@ const Room = function (creator, id = undefined, settings = undefined) {
 	this.id = id
 	this.settings = settings
 	this.players = []
+	this.state = "wait"
 
 	if (this.creator && !this.id) {// New room
 		this.id = openRooms.add(this)
@@ -29,11 +30,20 @@ const Room = function (creator, id = undefined, settings = undefined) {
 		if (result.status) {
 			this.creator = result.room.creator
 			this.players = result.room.players
+			this.settings = result.room.settings
+			this.state = result.room.state
 		} else {
 			return result
 		}
 	}
 
+	/**
+	 * This method returns [status: true] if the
+	 * player can join the room. If the room is
+	 * full or closed the response will be negative.
+	 * @param playerId
+	 * @returns {{errors: [], status: boolean}}
+	 */
 	this.joinPlayer = function (playerId) {
 		let result = {status: true, errors: []}
 
@@ -51,9 +61,25 @@ const Room = function (creator, id = undefined, settings = undefined) {
 			openRooms.update(this, {
 				players: this.players
 			})
+
+			if (this.settings.Capacity === this.players.length) {
+				this.setProperty("state", "play")
+			}
 		}
 
 		return result
+	}
+
+	/**
+	 * This method sets the <Room> properties. All the
+	 * information is saved via <OpenRooms> object.
+	 * @param key
+	 * @param value
+	 */
+	this.setProperty = function (key, value) {
+		this[key] = value
+
+		openRooms.update(this, key, value)
 	}
 
 }

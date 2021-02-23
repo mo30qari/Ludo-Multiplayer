@@ -38,10 +38,15 @@ const OpenRooms = function () {
 	}
 
 	this.list = function () {
-		let rooms = OPEN_ROOMS
+		let rooms = []
 
-		rooms.forEach(function (room) {
-			room.creator = room.creator.name
+		OPEN_ROOMS.forEach(function (room) {
+			rooms.push({
+				RoomID: room.id,
+				Creator: room.creator.name,
+				Settings: room.settings,
+				Players: room.players.length
+			})
 		})
 
 		return rooms
