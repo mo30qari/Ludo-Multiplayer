@@ -1,3 +1,6 @@
+const Database = require("./Database").Database
+let db = new Database()
+
 /**
  * This object keeps and manages the players who are online.
  * This object exists because this is impossible to read/write
@@ -16,22 +19,23 @@ const OnlinePlayers = function () {
 
 	this.add = function (player) {
 		ONLINE_PLAYERS.push(player)
+		db.writeOnFile("OnlinePlayers", ONLINE_PLAYERS)
 	}
 
 	this.remove = function (player) {
 		ONLINE_PLAYERS.splice(ONLINE_PLAYERS.indexOf(player), 1)
+		db.writeOnFile("OnlinePlayers", ONLINE_PLAYERS)
 	}
 
 	this.list = function () {
 		return ONLINE_PLAYERS
 	}
 
-	this.update = function (player, props) {
+	this.update = function (player, key, value) {
 		let ply = ONLINE_PLAYERS.find(e => e.id === player.id)
 
-		for (const [key, value] of Object.entries(props)) {
-			ply[key] = value
-		}
+		ply[key] = value
+		db.writeOnFile("OnlinePlayers", ONLINE_PLAYERS)
 	}
 }
 

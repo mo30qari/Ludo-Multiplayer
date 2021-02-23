@@ -57,10 +57,11 @@ const Database = function () {
 	 * and applies them int the player. The changes
 	 * should be inserted in json format.
 	 * @param player
-	 * @param props
+	 * @param key
+	 * @param value
 	 * @returns {{errors: [], status: boolean}}
 	 */
-	this.updatePlayer = function (player, props) {
+	this.updatePlayer = function (player, key, value) {
 		let result = {status: true, errors: []}
 		let ply = PLAYERS.find(e => e.id === player.id)
 
@@ -69,9 +70,7 @@ const Database = function () {
 		} else if (ply.deleted) {
 			result.errors.push("The player was deleted")
 		} else {
-			for (const [key, value] of Object.entries(props)) {
-				ply[key] = value
-			}
+			ply[key] = value
 		}
 
 		if (result.errors.length) {

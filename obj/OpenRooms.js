@@ -1,3 +1,6 @@
+const Database = require("./Database").Database
+let db = new Database()
+
 let OPEN_ROOMS = []
 
 const OpenRooms = function () {
@@ -5,12 +8,14 @@ const OpenRooms = function () {
 	this.add = function (room) {
 		room.id = Math.floor(1000000 + Math.random() * 9000000)
 		OPEN_ROOMS.push(room)
+		db.writeOnFile("OpenRooms", OPEN_ROOMS)
 
 		return room.id
 	}
 
 	this.remove = function (room) {
 		OPEN_ROOMS.splice(OPEN_ROOMS.indexOf(room), 1)
+		db.writeOnFile("OpenRooms", OPEN_ROOMS)
 	}
 
 	this.get = function (roomId) {
@@ -33,15 +38,20 @@ const OpenRooms = function () {
 	}
 
 	this.list = function () {
-		return OPEN_ROOMS
+		let rooms = OPEN_ROOMS
+
+		rooms.forEach(function (room) {
+			room.creator = room.creator.name
+		})
+
+		return rooms
 	}
 
-	this.update = function (room, props) {
+	this.update = function (room, key, value) {
 		let rom = OPEN_ROOMS.find(e => e.id === room.id)
 
-		for (const [key, value] of Object.entries(props)) {
-			rom[key] = value
-		}
+		rom[key] = value
+		db.writeOnFile("OpenRooms", OPEN_ROOMS)
 	}
 }
 

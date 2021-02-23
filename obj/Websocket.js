@@ -28,28 +28,28 @@ const Websocket = function (ws) {
 
 			switch (this.message.__Type) {
 				case "InitialReq": // Registering player in the Websocket server
-					this.handleInitialReq()
+					this.getHandleInitialReq()
 					break
 				case "CreateRoomReq": // When player creates a room
-					this.handleCreateRoomReq()
+					this.getHandleCreateRoomReq()
 					break
 				case "JoinToRoomReq": //A player wants to join a room
-					this.handleJoinToRoomReq()
+					this.getHandleJoinToRoomReq()
 					break
 			}
 
 		} else {// Unauthorized request
-			this.terminateConnection(result, "Unauthorized request.")
+			this.terminateConnection(result)
 		}
 	}
 
-	//  HANDLE FUNCTIONS
+	//  GET & HANDLE FUNCTIONS
 
-	this.handleInitialReq = function () {
+	this.getHandleInitialReq = function () {
 		let player = new Player(undefined, this.message.PlayerID)
 
 		if (!player.id) {// Unauthorized request
-			this.terminateConnection(player, "Unauthorized user. The connection terminated!")
+			this.terminateConnection(player)
 		} else {
 			player.setBasicProperty("ws", this.ws)// Relate user information sent via HTTPS and other information sent via Websocket
 			player.addToOnlinePlayers()// An online player should be registered in <onlinePlayers> in order to fast access
@@ -61,7 +61,7 @@ const Websocket = function (ws) {
 
 	}
 
-	this.handleCreateRoomReq = function () {
+	this.getHandleCreateRoomReq = function () {
 		let player = new Player(this.ws)
 
 		if (player.ws) {// Player is found!
@@ -77,35 +77,49 @@ const Websocket = function (ws) {
 				this.sendCreateRoomRes(room)// To the room's creator
 				this.sendCreateRoomUpdate(room)// To all waiting players except the player
 			} else {// The room is not found!
-				this.terminateConnection(player, "Room's information is wrong.")
+				this.terminateConnection(player)
 			}
 		} else {// The player is not found!
-			this.terminateConnection(player, "Unauthorized user.")
+			this.terminateConnection(player)
 		}
 
 	}
 
-	this.handleJoinToRoomReq = function () {
+	this.getHandleJoinToRoomReq = function () {
 		let player = new Player(this.ws)
 
 		if (player.ws) {// Player is found!
 			let room = new Room(undefined, this.message.RoomID)// Find room by id
 
 			if (room.id) {// Room is found!
-				room.joinPlayer(player.id)
-				player.setProperty("state", "play") //Changing the player state to play means he is in the game and room create or update updates no longer sent to him
+				let result = room.joinPlayer(player.id)
 
-				this.sendJoinToRoomRes(player, room)// To the joined player
-				this.sendJoinToRoomUpdate(room, player)// To all waiting players
+				if (result.status) {// Room confirmed joining player
+					player.setProperty("state", "play") //Changing the player state to play means he is in the game and room create or update updates no longer sent to him
+
+					this.sendJoinToRoomRes(player, room)// To the joined player
+					this.sendJoinToRoomUpdate(room, player)// To all waiting players
+				} else {
+					this.sendError(result)
+				}
+
 			} else {// The room is not found!
-				this.terminateConnection(player, "The room doesn't exist.")
+				this.terminateConnection(player)
 			}
 		} else {// The player is not found!
-			this.terminateConnection(player, "Unauthorized user.")
+			this.terminateConnection(player)
 		}
 	}
 
 	// End of HANDLE FUNCTIONS
+
+	//HANDLE FUNCTIONS
+
+	this.handleGameStart = function () {
+
+	}
+
+	//End of HANDLE FUNCTIONS
 
 	// SEND RESPONSE FUNCTIONS
 
@@ -183,10 +197,29 @@ const Websocket = function (ws) {
 		console.log("Websocket closed!")
 	}
 
-	this.terminateConnection = function (result, message) {
-		result.message = message + " The connection terminated!"
+	/**
+	 * This method shows the error and terminates
+	 * the websocket connection. Usually this method
+	 * is called when a high-risk issue happens in
+	 * the system.
+	 * @param result
+	 */
+	this.terminateConnection = function (result) {
+		result.__Type = "TerminateConnection"
+
 		this.ws.send(JSON.stringify(result))
 		this.ws.terminate()
+	}
+
+	/**
+	 * This method sends the normal (no high-risk)
+	 * errors.
+	 * @param result
+	 */
+	this.sendError = function (result) {
+		result.__Type = "Error"
+
+		this.ws.send(JSON.stringify(result))
 	}
 
 }

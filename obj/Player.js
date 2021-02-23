@@ -3,11 +3,22 @@ let onlinePlayers = new OnlinePlayers()
 const Database = require("./Database").Database
 let db = new Database()
 
+/**
+ * This object handles all about players. The player first
+ * register with HTTP request and after assigning ID, he
+ * sends a websocket request and after that he can create
+ * or join a room. The player manages with states: "init"
+ * ,"wait" & "play".
+ * @param ws
+ * @param id
+ * @returns {{errors: [], status: boolean}}
+ * @constructor
+ */
 const Player = function (ws, id = undefined) {
 
+	//Basic information
 	this.ws = ws
 	this.id = id
-	this.deleted = 0
 	this.avatar = 1
 
 	if (!this.ws && !this.id) {// New player
@@ -43,9 +54,7 @@ const Player = function (ws, id = undefined) {
 	this.setBasicProperty = function (key, value) {
 		this[key] = value
 
-		db.updatePlayer(this, {
-			key: value
-		})
+		db.updatePlayer(this, key, value)
 	}
 
 	/**
@@ -68,9 +77,7 @@ const Player = function (ws, id = undefined) {
 	this.setProperty = function (key, value) {
 		this[key] = value
 
-		onlinePlayers.update(this, {
-			key: value
-		})
+		onlinePlayers.update(this, key, value)
 	}
 
 }
