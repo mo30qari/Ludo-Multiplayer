@@ -1,3 +1,5 @@
+const OnlinePlayers = require("./OnlinePlayers").OnlinePlayers
+let onlinePlayers = new OnlinePlayers()
 const Database = require("./Database").Database
 let db = new Database()
 
@@ -6,7 +8,6 @@ const Player = function (ws, id = undefined) {
 	this.ws = ws
 	this.id = id
 	this.deleted = 0
-	this.state = "init"
 	this.avatar = 1
 
 	if (!this.ws && !this.id) {// New player
@@ -31,29 +32,45 @@ const Player = function (ws, id = undefined) {
 		}
 	}
 
-	// SET FUNCTIONS
+	/**
+	 * This method sets player information that needs to
+	 * be stored in the database. This information is
+	 * different from other information that is generated
+	 * during the gameplay.
+	 * @param key
+	 * @param value
+	 */
+	this.setBasicProperty = function (key, value) {
+		this[key] = value
 
-	this.setName = function (name) {
-		this.name = name
 		db.updatePlayer(this, {
-			name: name
+			key: value
 		})
 	}
 
-	this.setWS = function (ws) {
-		this.ws = ws
-		db.updatePlayer(this, {
-			ws: this.ws
-		})// <ws> was got when the instance was created
+	/**
+	 * This method adds the player into <OnlinePlayers>
+	 * and after that, the player is detected as an
+	 * active (now playing) player in the game.
+	 */
+	this.addToOnlinePlayers = function () {
+		onlinePlayers.add(this)
 	}
 
-	// End of SET FUNCTIONS
+	/**
+	 * This method sets immediate information of a player
+	 * during the gameplay. This information is different
+	 * from basic information that is stored into the
+	 * database.
+	 * @param key
+	 * @param value
+	 */
+	this.setProperty = function (key, value) {
+		this[key] = value
 
-	this.update = function (props) {
-		for (const [key, value] of Object.entries(props)) {
-			this[key] = value
-		}
-
+		onlinePlayers.update(this, {
+			key: value
+		})
 	}
 
 }

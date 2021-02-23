@@ -1,3 +1,5 @@
+const OpenRooms = require("./OpenRooms").OpenRooms
+let openRooms = new OpenRooms()
 const Database = require("./Database").Database
 let db = new Database()
 
@@ -10,9 +12,9 @@ const Room = function (creator, id = undefined, settings = undefined) {
 	this.players = []
 
 	if (this.creator && !this.id) {// New room
-		this.id = db.insertRoom(this)
+		this.id = openRooms.add(this)
 	} else if (this.id) {// The room already exists
-		let result = db.getRoom(this.id)
+		let result = openRooms.get(this.id)
 
 		if (result.status) {
 			this.creator = result.room.creator
@@ -25,7 +27,7 @@ const Room = function (creator, id = undefined, settings = undefined) {
 	this.joinPlayer = function (playerId) {
 		this.players.push(playerId)
 
-		db.updateRoom(this, {
+		openRooms.update(this, {
 			players: this.players
 		})
 	}

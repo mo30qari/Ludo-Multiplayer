@@ -9,24 +9,25 @@
  * in this object.
  * @constructor
  */
+
+let ONLINE_PLAYERS = []
+
 const OnlinePlayers = function () {
 
-	this.players = []
-
 	this.add = function (player) {
-		this.players.push(player)
+		ONLINE_PLAYERS.push(player)
 	}
 
 	this.remove = function (player) {
-		this.players.splice(this.players.indexOf(player), 1)
+		ONLINE_PLAYERS.splice(ONLINE_PLAYERS.indexOf(player), 1)
 	}
 
 	this.list = function () {
-		return this.players
+		return ONLINE_PLAYERS
 	}
 
 	this.update = function (player, props) {
-		let ply = this.players.find(e => e.id === player.id)
+		let ply = ONLINE_PLAYERS.find(e => e.id === player.id)
 
 		for (const [key, value] of Object.entries(props)) {
 			ply[key] = value

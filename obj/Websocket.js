@@ -3,6 +3,8 @@ const Player = require("./Player").Player
 const Room = require("./Room").Room
 const OnlinePlayers = require("./OnlinePlayers").OnlinePlayers
 let onlinePlayers = new OnlinePlayers()
+const OpenRooms = require("./OpenRooms").OpenRooms
+let openRooms = new OpenRooms()
 const Database = require("./Database").Database
 let db = new Database()
 
@@ -49,11 +51,10 @@ const Websocket = function (ws) {
 		if (!player.id) {// Unauthorized request
 			this.terminateConnection(player, "Unauthorized user. The connection terminated!")
 		} else {
-			player.setWS(this.ws)// Relate user information sent via HTTPS and other information sent via Websocket
-			onlinePlayers.add(player)// The online players should be registered in <onlinePlayers> in order to fast access
-			onlinePlayers.update(player, {
-				state: "wait"
-			})// Set player's state in <OnlinePlayers>
+			player.setBasicProperty("ws", this.ws)// Relate user information sent via HTTPS and other information sent via Websocket
+			player.addToOnlinePlayers()// An online player should be registered in <onlinePlayers> in order to fast access
+			player.setProperty("state", "wait")// Set player's state in <OnlinePlayers>
+			// Call some functions to notify users
 			this.sendInitialRes(player.name)// To the player
 			this.sendRoomsListUpdate(player)// To all waiting players
 		}
@@ -72,10 +73,11 @@ const Websocket = function (ws) {
 
 			if (room.id) {// The room is ready for players to join
 				console.log("A room has been added to the rooms list by " + player.name)
+
 				this.sendCreateRoomRes(room)// To the room's creator
 				this.sendCreateRoomUpdate(room)// To all waiting players except the player
 			} else {// The room is not found!
-				this.terminateConnection(player, "The room doesn't exist.")
+				this.terminateConnection(player, "Room's information is wrong.")
 			}
 		} else {// The player is not found!
 			this.terminateConnection(player, "Unauthorized user.")
@@ -90,12 +92,11 @@ const Websocket = function (ws) {
 			let room = new Room(undefined, this.message.RoomID)// Find room by id
 
 			if (room.id) {// Room is found!
-				room.joinPlayer(this.message.PlayerID)
-				onlinePlayers.update(player, {
-					state: "play"
-				}) //Changing the player state to play means he is in the game and room create or update updates no longer sent to him
-				this.sendJoinToRoomRes(player, room)
-				this.sendJoinToRoomUpdate(room, player)
+				room.joinPlayer(player.id)
+				player.setProperty("state", "play") //Changing the player state to play means he is in the game and room create or update updates no longer sent to him
+
+				this.sendJoinToRoomRes(player, room)// To the joined player
+				this.sendJoinToRoomUpdate(room, player)// To all waiting players
 			} else {// The room is not found!
 				this.terminateConnection(player, "The room doesn't exist.")
 			}
@@ -120,7 +121,7 @@ const Websocket = function (ws) {
 	this.sendRoomsListUpdate = function (player) {// Sends a list of rooms with details to the players with state of "wait"
 		player.ws.send(JSON.stringify({
 			__Type: "RoomsListUpdate",
-			Rooms: db.getAllWaitingRooms()
+			Rooms: openRooms.list()
 		}))
 	}
 
