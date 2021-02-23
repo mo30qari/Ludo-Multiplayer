@@ -3,21 +3,44 @@ let db = new Database()
 
 let OPEN_ROOMS = []
 
+/**
+ * This object manages all about the rooms. In order
+ * to fast response nothing about rooms is saved into
+ * database.
+ * @constructor
+ */
 const OpenRooms = function () {
 
+	/**
+	 * This method adds a room to <OPEN_ROOMS>.
+	 * @param room
+	 * @returns {number}
+	 */
 	this.add = function (room) {
 		room.id = Math.floor(1000000 + Math.random() * 9000000)
 		OPEN_ROOMS.push(room)
+
 		db.writeOnFile("OpenRooms", OPEN_ROOMS)
 
 		return room.id
 	}
 
+	/**
+	 * This method removes a room from <OPEN_ROOMS>.
+	 * @param room
+	 */
 	this.remove = function (room) {
 		OPEN_ROOMS.splice(OPEN_ROOMS.indexOf(room), 1)
+
 		db.writeOnFile("OpenRooms", OPEN_ROOMS)
 	}
 
+	/**
+	 * This method returns requested room if it exists.
+	 * Otherwise returns false response.
+	 * @param roomId
+	 * @returns {{errors: [], status: boolean}}
+	 */
 	this.get = function (roomId) {
 		let result = {status: true, errors: []}
 		let room = OPEN_ROOMS.find(e => e.id === roomId)
@@ -37,6 +60,12 @@ const OpenRooms = function () {
 		return result
 	}
 
+	/**
+	 * This method lists all the rooms in the <OPEN_ROOMS>.
+	 * The structure of the room in the response is a few
+	 * different from rooms' structure into <OPEN_ROOMS>.
+	 * @returns {[]}
+	 */
 	this.list = function () {
 		let rooms = []
 
@@ -52,10 +81,18 @@ const OpenRooms = function () {
 		return rooms
 	}
 
+	/**
+	 * This method finds a room into <OPEN_ROOMS> and updates
+	 * its information.
+	 * @param room
+	 * @param key
+	 * @param value
+	 */
 	this.update = function (room, key, value) {
 		let rom = OPEN_ROOMS.find(e => e.id === room.id)
 
 		rom[key] = value
+
 		db.writeOnFile("OpenRooms", OPEN_ROOMS)
 	}
 }

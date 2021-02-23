@@ -12,11 +12,18 @@ const Websocket = function (ws) {
 
 	this.ws = ws
 
+	/**
+	 *
+	 */
 	this.open = function () {
 		this.ws.send("Websocket connected on port :8090...")
 		console.log("Websocket connected on port :8090...")
 	}
 
+	/**
+	 *
+	 * @param req
+	 */
 	this.handleMessage = function (req) {
 		req = JSON.parse(req)
 
@@ -45,6 +52,9 @@ const Websocket = function (ws) {
 
 	//  GET & HANDLE FUNCTIONS
 
+	/**
+	 *
+	 */
 	this.getHandleInitialReq = function () {
 		let player = new Player(undefined, this.message.PlayerID)
 
@@ -61,6 +71,9 @@ const Websocket = function (ws) {
 
 	}
 
+	/**
+	 *
+	 */
 	this.getHandleCreateRoomReq = function () {
 		let player = new Player(this.ws)
 
@@ -85,6 +98,9 @@ const Websocket = function (ws) {
 
 	}
 
+	/**
+	 *
+	 */
 	this.getHandleJoinToRoomReq = function () {
 		let player = new Player(this.ws)
 
@@ -115,14 +131,23 @@ const Websocket = function (ws) {
 
 	//HANDLE FUNCTIONS
 
-	this.handleGameStart = function () {
+	/**
+	* This method sends <GameStart> response to the all
+	 * members of a room.
+	 * @param room
+	*/
+	// this.handleGameStart = function () {
 
-	}
+	//}
 
 	//End of HANDLE FUNCTIONS
 
 	// SEND RESPONSE FUNCTIONS
 
+	/**
+	 *
+	 * @param name
+	 */
 	this.sendInitialRes = function (name) {
 		this.ws.send(JSON.stringify({
 			__Type: "InitialRes",
@@ -132,6 +157,11 @@ const Websocket = function (ws) {
 		}))
 	}
 
+
+	/**
+	 *
+	 * @param player
+	 */
 	this.sendRoomsListUpdate = function (player) {// Sends a list of rooms with details to the players with state of "wait"
 		player.ws.send(JSON.stringify({
 			__Type: "RoomsListUpdate",
@@ -139,6 +169,10 @@ const Websocket = function (ws) {
 		}))
 	}
 
+	/**
+	 *
+	 * @param room
+	 */
 	this.sendCreateRoomRes = function (room) {
 		room.creator.ws.send(JSON.stringify({
 			__Type: "CreateRoomRes",
@@ -151,6 +185,10 @@ const Websocket = function (ws) {
 		}))
 	}
 
+	/**
+	 *
+	 * @param room
+	 */
 	this.sendCreateRoomUpdate = function (room) {
 		onlinePlayers.list().forEach(function (player) {
 			if (player.state === "wait" && player.id !== room.creator.id) {// Sending to players who are seeking for a room to join.
@@ -167,6 +205,11 @@ const Websocket = function (ws) {
 		})
 	}
 
+	/**
+	 *
+	 * @param player
+	 * @param room
+	 */
 	this.sendJoinToRoomRes = function (player, room) {
 		player.ws.send(JSON.stringify({
 			__Type: "JoinToRoomRes",
@@ -179,6 +222,11 @@ const Websocket = function (ws) {
 		}))
 	}
 
+	/**
+	 *
+	 * @param room
+	 * @param ply
+	 */
 	this.sendJoinToRoomUpdate = function (room, ply) {
 		onlinePlayers.list().forEach(function (player) {
 			if (player.state === "wait" && player.id !== ply.id) {// Sending to players who are seeking for a room to join.
@@ -193,6 +241,9 @@ const Websocket = function (ws) {
 
 	// End of SEND RESPONSE FUNCTIONS
 
+	/**
+	 *
+	 */
 	this.close = function () {
 		console.log("Websocket closed!")
 	}

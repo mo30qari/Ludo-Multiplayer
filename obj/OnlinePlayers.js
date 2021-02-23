@@ -17,20 +17,38 @@ let ONLINE_PLAYERS = []
 
 const OnlinePlayers = function () {
 
+	/**
+	 *
+	 * @param player
+	 */
 	this.add = function (player) {
 		ONLINE_PLAYERS.push(player)
 		db.writeOnFile("OnlinePlayers", ONLINE_PLAYERS)
 	}
 
+	/**
+	 *
+	 * @param player
+	 */
 	this.remove = function (player) {
 		ONLINE_PLAYERS.splice(ONLINE_PLAYERS.indexOf(player), 1)
 		db.writeOnFile("OnlinePlayers", ONLINE_PLAYERS)
 	}
 
+	/**
+	 *
+	 * @return {[]}
+	 */
 	this.list = function () {
 		return ONLINE_PLAYERS
 	}
 
+	/**
+	 *
+	 * @param player
+	 * @param key
+	 * @param value
+	 */
 	this.update = function (player, key, value) {
 		let ply = ONLINE_PLAYERS.find(e => e.id === player.id)
 

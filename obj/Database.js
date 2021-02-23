@@ -1,9 +1,22 @@
 let PLAYERS = []// As a table
 
+/**
+ * This object is supposed to do as a real database.
+ * In the future I should change it to MySql or Mongo.
+ * @constructor
+ */
 const Database = function () {
 
 	//PLAYER FUNCTIONS
 
+	/**
+	 * This function assigns an Id to the new player
+	 * and pushes it into <PLAYERS> that is as a
+	 * database table. At the end if everything was
+	 * good the function return the player's Id.
+	 * @param player
+	 * @returns {number}
+	 */
 	this.insertPlayer = function (player) {
 		player.id = Math.floor(1000000 + Math.random() * 9000000)
 		// player.id = 5485835
@@ -14,6 +27,13 @@ const Database = function () {
 		return player.id
 	}
 
+	/**
+	 * This function return the player found by its Id.
+	 * If the player doesn't exists return false response.
+	 * This function is used when the player is a new one.
+	 * @param id
+	 * @returns {{errors: [], status: boolean}}
+	 */
 	this.getPlayerById = function (id) {
 		let result = {status: true, errors: []}
 		let player = PLAYERS.find(e => e.id === id)
@@ -33,6 +53,14 @@ const Database = function () {
 		return result
 	}
 
+	/**
+	 * This function return the player found by its WS.
+	 * If the player doesn't exists return false response.
+	 * This function is used when the player register
+	 * is completed.
+	 * @param ws
+	 * @returns {{errors: [], status: boolean}}
+	 */
 	this.getPlayerByWs = function (ws) {
 		let result = {status: true, errors: []}
 		let player = PLAYERS.find(e => e.ws === ws)
