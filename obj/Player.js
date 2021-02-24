@@ -38,6 +38,10 @@ const Player = function (ws, id = undefined) {
 		if (result.status) {
 			this.name = result.player.name
 			this.id = result.player.id
+			// for (const [key, value] of Object.entries(result.player)){
+			// 	this[key] = value
+			// }
+			console.log(this)
 		} else {
 			return result
 		}
@@ -57,6 +61,7 @@ const Player = function (ws, id = undefined) {
 
 		if(result.status) {
 			this[key] = value
+			this.addToOnlinePlayers()
 			onlinePlayers.update(this, key, value)
 		}
 
@@ -70,6 +75,10 @@ const Player = function (ws, id = undefined) {
 	 */
 	this.addToOnlinePlayers = function () {
 		onlinePlayers.add(this)
+	}
+
+	this.removeFromOnlinePlayers = function () {
+		onlinePlayers.remove(this)
 	}
 
 	/**

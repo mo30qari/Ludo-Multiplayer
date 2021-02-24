@@ -27,12 +27,16 @@ const OnlinePlayers = function () {
 	}
 
 	/**
-	 *
+	 *This function deletes a existed player from the <ONLINE_PLAYERS>
+	 *If player doesn't exists does nothing.
 	 * @param player
 	 */
 	this.remove = function (player) {
-		ONLINE_PLAYERS.splice(ONLINE_PLAYERS.indexOf(player), 1)
-		db.writeOnFile("OnlinePlayers", ONLINE_PLAYERS)
+		if (ONLINE_PLAYERS.indexOf(player) !== -1) {// If player exists
+			ONLINE_PLAYERS.splice(ONLINE_PLAYERS.indexOf(player), 1)
+			
+			db.writeOnFile("OnlinePlayers", ONLINE_PLAYERS)
+		}
 	}
 
 	/**
