@@ -35,13 +35,16 @@ const Websocket = function (ws) {
 
 			switch (this.message.__Type) {
 				case "InitialReq": // Registering player in the Websocket server
-					this.getHandleInitialReq()
+					this.handleInitialReq()
 					break
 				case "CreateRoomReq": // When player creates a room
-					this.getHandleCreateRoomReq()
+					this.handleCreateRoomReq()
 					break
-				case "JoinToRoomReq": //A player wants to join a room
-					this.getHandleJoinToRoomReq()
+				case "JoinToRoomReq": // Player wants to join a room
+					this.handleJoinToRoomReq()
+					break
+				case "PlayerBackReq": // When player was suspended and resumes
+					this.handlePlayerBackReq()
 					break
 			}
 
@@ -50,12 +53,12 @@ const Websocket = function (ws) {
 		}
 	}
 
-	//  GET & HANDLE FUNCTIONS
+	//  HANDLE FUNCTIONS
 
 	/**
 	 *
 	 */
-	this.getHandleInitialReq = function () {
+	this.handleInitialReq = function () {
 		let player = new Player(undefined, this.message.PlayerID)
 
 		if (!player.id) {// Unauthorized request
@@ -73,7 +76,7 @@ const Websocket = function (ws) {
 	/**
 	 *
 	 */
-	this.getHandleCreateRoomReq = function () {
+	this.handleCreateRoomReq = function () {
 		let player = new Player(this.ws)
 
 		if (player.ws) {// Player is found!
@@ -100,7 +103,7 @@ const Websocket = function (ws) {
 	/**
 	 *
 	 */
-	this.getHandleJoinToRoomReq = function () {
+	this.handleJoinToRoomReq = function () {
 		let player = new Player(this.ws)
 
 		if (player.ws) {// Player is found!
@@ -129,10 +132,6 @@ const Websocket = function (ws) {
 		}
 	}
 
-	// End of HANDLE FUNCTIONS
-
-	//HANDLE FUNCTIONS
-
 	/**
 	 * This method sends <GameStart> response to the all
 	 * members of a room.
@@ -146,6 +145,18 @@ const Websocket = function (ws) {
 			ply.setProperty("state", "play")
 			that.sendGameStart(player, room)
 		})
+	}
+
+	this.handlePlayerBackReq = function () {
+		let room = new Room(undefined, this.message.RoomID)
+
+		if (room) {
+			let player = new Player(this.message.PlayerID)
+
+			if (player) {
+
+			}
+		}
 	}
 
 	//End of HANDLE FUNCTIONS
