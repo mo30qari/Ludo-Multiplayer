@@ -148,13 +148,19 @@ const Websocket = function (ws) {
 	}
 
 	this.handlePlayerBackReq = function () {
+		let result = {}
 		let room = new Room(undefined, this.message.RoomID)
 
 		if (room) {
 			let player = new Player(this.message.PlayerID)
 
 			if (player) {
+				if (room.players.findIndex(player) !== -1){
 
+				}
+				if (room.state !== "play") {
+					result.Result = false
+				}
 			}
 		}
 	}
