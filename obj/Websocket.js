@@ -107,13 +107,16 @@ const Websocket = function (ws) {
 			let room = new Room(undefined, this.message.RoomID)// Find room by id
 
 			if (room.id) {// Room is found!
-				let result = room.joinPlayer(player.id)
+				let result = room.joinPlayer(player)
 
 				if (result.status) {// Room confirmed joining player
-					player.setProperty("state", "play") //Changing the player state to play means he is in the game and room create or update updates no longer sent to him
 
 					this.sendJoinToRoomRes(player, room)// To the joined player
 					this.sendJoinToRoomUpdate(room, player)// To all waiting players
+
+					if (result.room.state === "play") {
+						this.handleGameStart(result.room)
+					}
 				} else {
 					this.sendError(result)
 				}
@@ -131,13 +134,19 @@ const Websocket = function (ws) {
 	//HANDLE FUNCTIONS
 
 	/**
-	* This method sends <GameStart> response to the all
+	 * This method sends <GameStart> response to the all
 	 * members of a room.
 	 * @param room
-	*/
-	// this.handleGameStart = function () {
+	 */
+	this.handleGameStart = function (room) {
+		let that = this
+		room.players.forEach(function (player) {
+			let ply = new Player(player.ws)
 
-	//}
+			ply.setProperty("state", "play")
+			that.sendGameStart(player, room)
+		})
+	}
 
 	//End of HANDLE FUNCTIONS
 
@@ -179,7 +188,7 @@ const Websocket = function (ws) {
 				ID: room.id,
 				Creator: room.creator.name,
 				Settings: room.settings,
-				Players: room.players
+				Players: this.formatPlayers(room.players)
 			}
 		}))
 	}
@@ -189,6 +198,8 @@ const Websocket = function (ws) {
 	 * @param room
 	 */
 	this.sendCreateRoomUpdate = function (room) {
+		let that = this
+
 		onlinePlayers.list().forEach(function (player) {
 			if (player.state === "wait" && player.id !== room.creator.id) {// Sending to players who are seeking for a room to join.
 				player.ws.send(JSON.stringify({
@@ -197,7 +208,7 @@ const Websocket = function (ws) {
 						ID: room.id,
 						Creator: room.creator.name,
 						Settings: room.settings,
-						Players: room.players
+						Players: that.formatPlayers(room.players)
 					}
 				}))
 			}
@@ -213,7 +224,7 @@ const Websocket = function (ws) {
 		player.ws.send(JSON.stringify({
 			__Type: "JoinToRoomRes",
 			Settings: room.settings,
-			PlayerNumber: room.players.findIndex(e => e === player.id) + 1,
+			PlayerNumber: room.players.findIndex(e => e.id === player.id) + 1,
 			Player: {
 				NickName: player.name,
 				Avatar: player.avatar
@@ -236,6 +247,19 @@ const Websocket = function (ws) {
 				}))
 			}
 		})
+	}
+
+	/**
+	 *
+	 * @param player
+	 * @param room
+	 */
+	this.sendGameStart = function (player, room) {
+
+		player.ws.send(JSON.stringify({
+			__Type: "GameStart",
+			Players: this.formatPlayers(room.players)
+		}))
 	}
 
 	// End of SEND RESPONSE FUNCTIONS
@@ -270,6 +294,24 @@ const Websocket = function (ws) {
 		result.__Type = "Error"
 
 		this.ws.send(JSON.stringify(result))
+	}
+
+	/**
+	 *
+	 * @param players
+	 * @return {[]}
+	 */
+	this.formatPlayers = function (players) {
+		let result = []
+
+		players.forEach(function (player) {
+			result.push({
+				NickName: player.name,
+				Avatar: player.avatar
+			})
+		})
+
+		return result
 	}
 
 }
