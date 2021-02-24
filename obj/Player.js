@@ -8,7 +8,7 @@ let db = new Database()
  * register with HTTP request and after assigning ID, he
  * sends a websocket request and after that he can create
  * or join a room. The player manages with states: "init"
- * ,"wait" & "play".
+ * ,"wait", "play" & "deleted".
  * @param ws
  * @param id
  * @returns {{errors: [], status: boolean}}
@@ -45,16 +45,22 @@ const Player = function (ws, id = undefined) {
 
 	/**
 	 * This method sets player information that needs to
-	 * be stored in the database. This information is
+	 * be stored into the database. This information is
 	 * different from other information that is generated
 	 * during the gameplay.
 	 * @param key
 	 * @param value
+	 * @return {{errors: *[], status: boolean}}
 	 */
 	this.setBasicProperty = function (key, value) {
-		this[key] = value
+		let result = db.updatePlayer(this, key, value)
 
-		db.updatePlayer(this, key, value)
+		if(result.status) {
+			this[key] = value
+			onlinePlayers.update(this, key, value)
+		}
+
+		return result
 	}
 
 	/**
@@ -78,6 +84,18 @@ const Player = function (ws, id = undefined) {
 		this[key] = value
 
 		onlinePlayers.update(this, key, value)
+	}
+
+	/**
+	 * This function sets <deleted> field for the player.
+	 * Because of calling <setBasicProperty> function, the
+	 * deletion process also saved into the database and
+	 * <ONLINE_PLAYERS>.
+	 * The function returns false if player is not found.
+	 * @return {{errors: *[], status: boolean}}
+	 */
+	this.delete = function () {
+		return this.setBasicProperty("deleted", 1)
 	}
 
 }
