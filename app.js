@@ -20,6 +20,7 @@ app.get('/register/:username', function (req, res) {
 
 	if (result.status) {
 		let player = new Player(undefined)
+
 		res.write(JSON.stringify({
 			status: true,
 			player: player
