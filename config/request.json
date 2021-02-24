@@ -27,5 +27,17 @@
       "min": 1000000,
       "max": 9999999
     }
+  },
+  "PlayerBackReq": {
+    "RoomID": {
+      "type": "number",
+      "min": 1000000,
+      "max": 9999999
+    },
+    "PlayerID": {
+      "type": "number",
+      "min": 1000000,
+      "max": 9999999
+    }
   }
 }
