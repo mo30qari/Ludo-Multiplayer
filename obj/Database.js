@@ -31,39 +31,19 @@ const Database = function () {
 	 * This function return the player found by its Id.
 	 * If the player doesn't exists return false response.
 	 * This function is used when the player is a new one.
+	 * @param ws
 	 * @param id
 	 * @returns {{errors: [], status: boolean}}
 	 */
-	this.getPlayerById = function (id) {
+	this.getPlayer = function (ws, id = undefined) {
 		let result = {status: true, errors: []}
-		let player = PLAYERS.find(e => e.id === id)
+		let player
 
-		if (!player) {
-			result.errors.push("The player doesn't exist")
-		} else if (player.deleted) {
-			result.errors.push("The player was deleted")
+		if (ws) {
+			player = PLAYERS.find(e => e.ws === ws)
+		} else if (id){
+			player = PLAYERS.find(e => e.id === id)
 		}
-
-		if (result.errors.length) {
-			result.status = false
-		} else {
-			result.player = player
-		}
-
-		return result
-	}
-
-	/**
-	 * This function return the player found by its WS.
-	 * If the player doesn't exists return false response.
-	 * This function is used when the player register
-	 * is completed.
-	 * @param ws
-	 * @returns {{errors: [], status: boolean}}
-	 */
-	this.getPlayerByWs = function (ws) {
-		let result = {status: true, errors: []}
-		let player = PLAYERS.find(e => e.ws === ws)
 
 		if (!player) {
 			result.errors.push("The player doesn't exist")
