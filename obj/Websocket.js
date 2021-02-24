@@ -297,7 +297,7 @@ const Websocket = function (ws) {
 	}
 
 	/**
-	 *
+	 *This method formats players array to sending in responses.
 	 * @param players
 	 * @return {[]}
 	 */
