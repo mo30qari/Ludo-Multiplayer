@@ -62,7 +62,6 @@ const Websocket = function (ws) {
 			this.terminateConnection(player)
 		} else {
 			player.setBasicProperty("ws", this.ws)// Relate user information sent via HTTPS and other information sent via Websocket
-			player.addToOnlinePlayers()// An online player should be registered in <onlinePlayers> in order to fast access
 			player.setProperty("state", "wait")// Set player's state in <OnlinePlayers>
 			// Call some functions to notify users
 			this.sendInitialRes(player.name)// To the player
