@@ -28,10 +28,9 @@ const Room = function (creator, id = undefined, settings = undefined) {
 		let result = openRooms.get(this.id)
 
 		if (result.status) {
-			this.creator = result.room.creator
-			this.players = result.room.players
-			this.settings = result.room.settings
-			this.state = result.room.state
+			for (const [key, value] of Object.entries(result.room)){
+				this[key] = value
+			}
 		} else {
 			return result
 		}
@@ -41,7 +40,7 @@ const Room = function (creator, id = undefined, settings = undefined) {
 	 * This method returns [status: true] if the
 	 * player can join the room. If the room is
 	 * full or closed the response will be negative.
-	 * @param playerId
+	 * @param player
 	 * @returns {{errors: [], status: boolean}}
 	 */
 	this.joinPlayer = function (player) {
