@@ -44,7 +44,7 @@ const Room = function (creator, id = undefined, settings = undefined) {
 	 * @param playerId
 	 * @returns {{errors: [], status: boolean}}
 	 */
-	this.joinPlayer = function (playerId) {
+	this.joinPlayer = function (player) {
 		let result = {status: true, errors: []}
 
 		if (this.state === "play") {
@@ -56,15 +56,13 @@ const Room = function (creator, id = undefined, settings = undefined) {
 		if (result.errors.length) {
 			result.status = false
 		} else {
-			this.players.push(playerId)
-
-			openRooms.update(this, {
-				players: this.players
-			})
+			this.addToPlayers(player)
 
 			if (this.settings.Capacity === this.players.length) {
 				this.setProperty("state", "play")
 			}
+
+			result.room = this
 		}
 
 		return result
@@ -80,6 +78,17 @@ const Room = function (creator, id = undefined, settings = undefined) {
 		this[key] = value
 
 		openRooms.update(this, key, value)
+	}
+
+	/**
+	 * This function adds a player to the players and
+	 * also update room in <OPEN_ROOMS>.
+	 * @param player
+	 */
+	this.addToPlayers = function (player) {
+		this.players.push(player)
+
+		openRooms.update(this, "players", this.players)
 	}
 
 }

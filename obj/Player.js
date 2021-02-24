@@ -23,7 +23,6 @@ const Player = function (ws, id = undefined) {
 
 	if (!this.ws && !this.id) {// New player
 		this.id = db.insertPlayer(this)
-
 	} else if (!this.ws && this.id) {// The player wants to register to websocket
 		let result = db.getPlayerById(this.id)
 
@@ -36,15 +35,28 @@ const Player = function (ws, id = undefined) {
 		let result = db.getPlayerByWs(this.ws)
 
 		if (result.status) {
-			this.name = result.player.name
-			this.id = result.player.id
-			// for (const [key, value] of Object.entries(result.player)){
-			// 	this[key] = value
-			// }
-			console.log(this)
+			// this.name = result.player.name
+			// this.id = result.player.id
+			for (const [key, value] of Object.entries(result.player)){
+				this[key] = value
+			}
 		} else {
 			return result
 		}
+	}
+
+	/**
+	 *
+	 * @param name
+	 */
+	this.setName = function (name) {
+		let result = db.updatePlayer(this, "name", name)
+
+		if(result.status) {
+			this.name = name
+		}
+
+		return result
 	}
 
 	/**
@@ -73,7 +85,7 @@ const Player = function (ws, id = undefined) {
 	 * and after that, the player is detected as an
 	 * active (now playing) player in the game.
 	 */
-	this.addToOnlinePlayers = function () {
+	this.addToOnlinePlayers = function () {console.log("added to")
 		onlinePlayers.add(this)
 	}
 

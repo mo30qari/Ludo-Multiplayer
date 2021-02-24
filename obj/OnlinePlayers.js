@@ -39,6 +39,25 @@ const OnlinePlayers = function () {
 		}
 	}
 
+	this.get = function(playerId) {
+		let result = {status: true, errors: []}
+		let player = ONLINE_PLAYERS.find(e => e.id === playerId)
+
+		if (!player) {
+			result.errors.push("The player doesn't exist or isn't active now.")
+		} else if (player.deleted) {
+			result.errors.push("The player was deleted from players.")
+		}
+
+		if (result.errors.length) {
+			result.status = false
+		} else {
+			result.player = player
+		}
+
+		return result
+	}
+
 	/**
 	 *
 	 * @return {[]}
