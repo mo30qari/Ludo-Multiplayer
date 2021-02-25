@@ -22,7 +22,14 @@ const OnlinePlayers = function () {
 	 * @param player
 	 */
 	this.add = function (player) {
+		let ply = ONLINE_PLAYERS.find(e => e.id === player.id)
+
+		if (ply) {
+			ONLINE_PLAYERS.splice(ONLINE_PLAYERS.indexOf(ply), 1)
+		}
+
 		ONLINE_PLAYERS.push(player)
+
 		db.writeOnFile("OnlinePlayers", ONLINE_PLAYERS)
 	}
 

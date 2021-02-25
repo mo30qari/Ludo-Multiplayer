@@ -41,20 +41,6 @@ const Player = function (ws, id = undefined) {
 	}
 
 	/**
-	 *
-	 * @param name
-	 */
-	this.setName = function (name) {
-		let result = db.updatePlayer(this, "name", name)
-
-		if(result.status) {
-			this.name = name
-		}
-
-		return result
-	}
-
-	/**
 	 * This method sets player information that needs to
 	 * be stored into the database. This information is
 	 * different from other information that is generated

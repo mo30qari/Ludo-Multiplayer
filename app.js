@@ -26,7 +26,7 @@ app.get('/register/:username', function (req, res) {
 			player: player
 		}))
 
-		player.setName(req.params["username"])
+		player.setBasicProperty("name", req.params["username"])
 
 	} else {
 		res.write(JSON.stringify(result))

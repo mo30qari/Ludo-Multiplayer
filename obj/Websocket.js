@@ -148,18 +148,19 @@ const Websocket = function (ws) {
 	}
 
 	this.handlePlayerBackReq = function () {
-		let result = {}
 		let room = new Room(undefined, this.message.RoomID)
 
 		if (room) {
 			let player = new Player(this.message.PlayerID)
 
 			if (player) {
-				if (room.players.findIndex(player) !== -1){
+				let result = room.has(player)
 
-				}
-				if (room.state !== "play") {
-					result.Result = false
+				if (result.status) {
+					player.setBasicProperty("ws", player.ws)
+					this.sendPlayerBackRes(player, room, true)
+				} else {
+					this.sendPlayerBackRes(player, room, false)
 				}
 			}
 		}
@@ -279,6 +280,25 @@ const Websocket = function (ws) {
 		}))
 	}
 
+	this.sendPlayerBackRes = function (player, room, result) {
+		if(result) {
+			player.ws.send(JSON.stringify({
+				__Type: "PlayerBackRes",
+				Result: true,
+				Turn: room.data.turn,
+				Dice: room.data.dice,
+				GameState: room.data.gameState,
+				ElapsedTime: player.elapsedTime,
+				Players: this.formatPlayers(room.players)
+			}))
+		} else {
+			this.ws.send(JSON.stringify({
+				__Type: "PlayerBackRes",
+				Result: false
+			}))
+		}
+	}
+
 	// End of SEND RESPONSE FUNCTIONS
 
 	/**
@@ -323,6 +343,7 @@ const Websocket = function (ws) {
 
 		players.forEach(function (player) {
 			result.push({
+				PlayerID: player.id,
 				NickName: player.name,
 				Avatar: player.avatar
 			})

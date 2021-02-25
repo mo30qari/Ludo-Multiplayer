@@ -1,7 +1,5 @@
 const OpenRooms = require("./OpenRooms").OpenRooms
 let openRooms = new OpenRooms()
-const Database = require("./Database").Database
-let db = new Database()
 
 /**
  * This object handles all about rooms. The player first
@@ -18,9 +16,14 @@ const Room = function (creator, id = undefined, settings = undefined) {
 
 	this.creator = creator
 	this.id = id
-	this.settings = settings
+	this.settings = settings// capacity, safeSquares and firstTurnExit
 	this.players = []
-	this.state = "wait"
+	this.state = "wait"// wait, play and closed
+	this.data = {
+		gameState: [],// Keeps all data about the latest game's event
+		turn: 1,// Which player should roll dice?
+		dice: 0// What's the number of latest dice?
+	}
 
 	if (this.creator && !this.id) {// New room
 		this.id = openRooms.add(this)
@@ -88,6 +91,27 @@ const Room = function (creator, id = undefined, settings = undefined) {
 		this.players.push(player)
 
 		openRooms.update(this, "players", this.players)
+	}
+
+	/**
+	 *
+	 * @param player
+	 * @return {{errors: [], status: boolean}}
+	 */
+	this.has = function (player) {
+		let result = {status: true, errors: []}
+
+		let ply = this.players.find(e => e.id === player.id)
+
+		if (!ply) {
+			result.errors.push("The player doesn't belong or resigned from the room.")
+		}
+
+		if (result.errors.length) {
+			result.status = false
+		}
+
+		return result
 	}
 
 }
