@@ -61,21 +61,24 @@ const OpenRooms = function () {
 	}
 
 	/**
-	 * This method lists all the rooms in the <OPEN_ROOMS>.
-	 * The structure of the room in the response is a few
-	 * different from rooms' structure into <OPEN_ROOMS>.
+	 * This method lists all the rooms in the <OPEN_ROOMS>
+	 * with state = "wait". The structure of the room in
+	 * the response is a few different from rooms' structure
+	 * in <OPEN_ROOMS>.
 	 * @returns {[]}
 	 */
 	this.list = function () {
 		let rooms = []
 
 		OPEN_ROOMS.forEach(function (room) {
-			rooms.push({
-				RoomID: room.id,
-				Creator: room.creator.name,
-				Settings: room.settings,
-				Players: room.players.length
-			})
+			if (room.state === "wait") {
+				rooms.push({
+					RoomID: room.id,
+					Creator: room.creator.name,
+					Settings: room.settings,
+					Players: room.players.length
+				})
+			}
 		})
 
 		return rooms
