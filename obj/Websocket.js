@@ -151,7 +151,7 @@ const Websocket = function (ws) {
 		let room = new Room(undefined, this.message.RoomID)
 
 		if (room) {
-			let player = new Player(this.message.PlayerID)
+			let player = new Player(undefined, this.message.PlayerID)
 
 			if (player) {
 				let result = room.has(player)
