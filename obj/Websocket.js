@@ -68,7 +68,7 @@ const Websocket = function (ws) {
 			player.setProperty("state", "wait")// Set player's state in <OnlinePlayers>
 
 			// Call some functions to notify the player
-			this.sendInitialRes(player.name)// To the player
+			this.sendInitialRes(player)// To the player
 			this.sendRoomsListUpdate(player)// Send OPEN_ROOMS data to the player
 		}
 
@@ -125,7 +125,7 @@ const Websocket = function (ws) {
 				}
 
 			} else {// The room is not found!
-				this.terminateConnection(player)
+				this.terminateConnection(room)
 			}
 		} else {// The player is not found!
 			this.terminateConnection(player)
@@ -147,6 +147,9 @@ const Websocket = function (ws) {
 		})
 	}
 
+	/**
+	 *
+	 */
 	this.handlePlayerBackReq = function () {
 		let room = new Room(undefined, this.message.RoomID)
 
@@ -172,13 +175,14 @@ const Websocket = function (ws) {
 
 	/**
 	 *
-	 * @param name
+	 * @param player
 	 */
-	this.sendInitialRes = function (name) {
+	this.sendInitialRes = function (player) {
 		this.ws.send(JSON.stringify({
 			__Type: "InitialRes",
 			Player: {
-				Name: name
+				Name: player.name,
+				Avatar: player.avatar
 			}
 		}))
 	}
@@ -225,12 +229,7 @@ const Websocket = function (ws) {
 	this.sendCreateRoomRes = function (room) {
 		room.creator.ws.send(JSON.stringify({
 			__Type: "CreateRoomRes",
-			Room: {
-				ID: room.id,
-				Creator: room.creator.name,
-				Settings: room.settings,
-				Players: this.formatPlayers(room.players)
-			}
+			RoomID: room.id
 		}))
 	}
 
@@ -243,11 +242,7 @@ const Websocket = function (ws) {
 		player.ws.send(JSON.stringify({
 			__Type: "JoinToRoomRes",
 			Settings: room.settings,
-			PlayerNumber: room.players.findIndex(e => e.id === player.id) + 1,
-			Player: {
-				NickName: player.name,
-				Avatar: player.avatar
-			}
+			PlayerNumber: room.players.findIndex(e => e.id === player.id) + 1
 		}))
 	}
 
@@ -295,9 +290,10 @@ const Websocket = function (ws) {
 	 * @param result
 	 */
 	this.sendError = function (result) {
-		result.__Type = "Error"
-
-		this.ws.send(JSON.stringify(result))
+		this.ws.send(JSON.stringify({
+			__Type: "Error",
+			Errors: result.errors
+		}))
 	}
 
 	/**
@@ -308,9 +304,10 @@ const Websocket = function (ws) {
 	 * @param result
 	 */
 	this.terminateConnection = function (result) {
-		result.__Type = "TerminateConnection"
-
-		this.ws.send(JSON.stringify(result))
+		this.ws.send(JSON.stringify({
+			__Type: "FatalError",
+			Errors: result.errors
+		}))
 		this.ws.terminate()
 	}
 
