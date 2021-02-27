@@ -20,6 +20,7 @@ const Player = function (ws, id = undefined) {
 	this.ws = ws
 	this.id = id
 	this.avatar = 1
+	this.roomId = undefined
 	let result = {}
 
 	if (!this.ws && !this.id) {// New player
