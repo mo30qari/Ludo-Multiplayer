@@ -267,7 +267,7 @@ const Websocket = function (ws) {
 	 */
 	this.sendPlayerBackRes = function (player, room, result) {
 		if(result) {
-			player.ws.send(JSON.stringify({
+			this.ws.send(JSON.stringify({
 				__Type: "PlayerBackRes",
 				Result: true,
 				Turn: room.data.turn,
