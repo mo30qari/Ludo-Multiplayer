@@ -58,5 +58,26 @@
       "min": 1,
       "max": 6
     }
+  },
+  "RoomDataReq": {
+    "Turn": {
+      "type": "number",
+      "min": 1,
+      "max": 4
+    },
+    "Dice": {
+      "type": "number",
+      "min": 1,
+      "max": 6
+    },
+    "GameState": {
+      "type": "object",
+      "properties": [
+        "HowFar",
+        "ColoredWay",
+        "Selectable",
+        "MayKicked"
+      ]
+    }
   }
 }
