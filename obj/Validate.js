@@ -83,7 +83,7 @@ const Validate = function () {
 
 		if (typeof obj != "object") {
 			result.errors.push("The property must be object")
-		} else {
+		} else if(props.length){
 			props.forEach(function (key) {
 				if (!obj.hasOwnProperty(key)) {
 					result.errors.push(key + ": " + "doesn't exists in property")
@@ -111,7 +111,7 @@ const Validate = function () {
 
 				for (const [key, value] of Object.entries(req)) {// Iterating in request
 
-					if (key != "__Type") {// The __Type is already checked.
+					if (key !== "__Type") {// The __Type is already checked.
 
 						switch (structure[key].type) {
 							case "string":
