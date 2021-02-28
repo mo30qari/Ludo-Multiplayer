@@ -50,6 +50,9 @@ const Websocket = function (ws) {
 				case "PlayerMovedReq": // When player moved
 					this.handlePlayerMovedReq()
 					break
+				case "RoomDataReq":
+					this.handleRoomDataReq()
+					break
 			}
 
 		} else {// Unauthorized request
@@ -160,10 +163,10 @@ const Websocket = function (ws) {
 	this.handlePlayerBackReq = function () {
 		let room = new Room(undefined, this.message.RoomID)
 
-		if (room) {
+		if (room.id) {
 			let player = new Player(undefined, this.message.PlayerID)
 
-			if (player) {
+			if (player.id) {
 				let result = room.has(player)
 
 				if (result.status) {
@@ -186,10 +189,10 @@ const Websocket = function (ws) {
 	this.handleDiceRolledReq = function () {
 		let player = new Player(this.ws)
 
-		if (player) {
+		if (player.id) {
 			let room = new Room(undefined, openRooms.getByPlayer(player).room.id)
 
-			if (room) {
+			if (room.id) {
 				room.setData("dice", this.message.Dice)
 
 				this.sendDiceRolledRes(player, room)
@@ -201,14 +204,37 @@ const Websocket = function (ws) {
 		}
 	}
 
+	/**
+	 *
+	 */
 	this.handlePlayerMovedReq = function () {
 		let player = new Player(this.ws)
 
-		if (player) {
+		if (player.id) {
 			let room = new Room(undefined, openRooms.getByPlayer(player).room.id)
 
-			if (room) {
+			if (room.id) {
 				this.sendPlayerMovedRes(player, room)
+			} else {
+				this.terminateConnection(room)
+			}
+		} else {
+			this.terminateConnection(player)
+		}
+	}
+
+	this.handleRoomDataReq = function () {
+		let player = new Player(this.ws)
+
+		if (player.id) {
+			let room = new Room(undefined, openRooms.getByPlayer(player).room.id)
+
+			if (room.id) {
+				//store data in room.data.gameState
+				room.setData("gameState", this.message.GameState)
+				room.setData("dice", this.message.Dice)
+				room.setData("turn", this.message.Turn)
+				console.log("Player:" + player.id + " saved data in room: " + room.id)
 			} else {
 				this.terminateConnection(room)
 			}
@@ -349,6 +375,11 @@ const Websocket = function (ws) {
 		})
 	}
 
+	/**
+	 *
+	 * @param player
+	 * @param room
+	 */
 	this.sendPlayerMovedRes = function (player, room) {
 		let that = this
 		room.players.forEach(function (ply) {
@@ -387,7 +418,7 @@ const Websocket = function (ws) {
 			__Type: "FatalError",
 			Errors: result.errors
 		}))
-		this.ws.terminate()
+		// this.ws.terminate()
 	}
 
 	// End of SEND RESPONSE FUNCTIONS
