@@ -20,7 +20,6 @@ const Player = function (ws, id = undefined) {
 	this.ws = ws
 	this.id = id
 	this.avatar = 1
-	this.roomId = undefined
 	let result = {}
 
 	if (!this.ws && !this.id) {// New player
@@ -33,9 +32,16 @@ const Player = function (ws, id = undefined) {
 		}
 
 		if (result.status) {
-			for (const [key, value] of Object.entries(result.player)){
-				this[key] = value
+			result = onlinePlayers.get(result.player.id)
+
+			if(result.status) {
+				for (const [key, value] of Object.entries(result.player)){
+					this[key] = value
+				}
+			} else {
+				return result
 			}
+
 		} else {
 			return result
 		}
