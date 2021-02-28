@@ -114,6 +114,12 @@ const Room = function (creator, id = undefined, settings = undefined) {
 		return result
 	}
 
+	this.setData = function (key, value) {
+		this.data[key] = value
+
+		openRooms.update(this, "data", this.data)
+	}
+
 }
 
 exports.Room = Room

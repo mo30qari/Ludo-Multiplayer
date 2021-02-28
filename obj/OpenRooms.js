@@ -98,6 +98,25 @@ const OpenRooms = function () {
 
 		db.writeOnFile("OpenRooms", OPEN_ROOMS)
 	}
+
+	this.getByPlayer = function (player) {
+		let result = {status: true, errors: []}
+		let room = OPEN_ROOMS.find(e => e.id === player.roomId)
+
+		if (!room) {
+			result.errors.push("The player doesn't belong to any room.")
+		}
+
+		if (result.errors.length) {
+			result.status = false
+		} else {
+			result.room = room
+		}
+
+		return result
+	}
+
+
 }
 
 exports.OpenRooms = OpenRooms

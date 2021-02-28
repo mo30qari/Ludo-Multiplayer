@@ -46,6 +46,9 @@ const Websocket = function (ws) {
 				case "PlayerBackReq": // When player was suspended and resumes
 					this.handlePlayerBackReq()
 					break
+				case "DiceRolledReq": // When player rolled dice
+					this.handleDiceRolledReq()
+					break
 			}
 
 		} else {// Unauthorized request
@@ -114,6 +117,9 @@ const Websocket = function (ws) {
 				let result = room.joinPlayer(player)
 
 				if (result.status) {// Room confirmed joining player
+					player.setProperty("roomId", room.id)// Add room id to the player's properties
+					player.setProperty("turn", room.players.findIndex(e => e.id === player.id) + 1)
+
 					this.sendJoinToRoomRes(player, room)// To the joined player
 					this.sendRoomsListUpdate(player, true, false)// To all waiting players
 
@@ -165,7 +171,32 @@ const Websocket = function (ws) {
 				} else {
 					this.sendPlayerBackRes(player, room, false)
 				}
+			} else {
+				this.terminateConnection(player)
 			}
+		} else {
+			this.terminateConnection(room)
+		}
+	}
+
+	/**
+	 *
+	 */
+	this.handleDiceRolledReq = function () {
+		let player = new Player(this.ws)
+
+		if (player) {
+			let room = new Room(undefined, openRooms.getByPlayer(player).room.id)
+
+			if (room) {
+				room.setData("dice", this.message.Dice)
+
+				this.sendDiceRolledRes(player, room)
+			} else {
+				this.terminateConnection(room)
+			}
+		} else {
+			this.terminateConnection(player)
 		}
 	}
 
@@ -200,8 +231,8 @@ const Websocket = function (ws) {
 		if (!broadcast) {
 			sendList.push(player)
 		} else {
-			onlinePlayers.list().forEach(function (ply){
-				if(ply.state === "wait" && ply.id !== player.id) {
+			onlinePlayers.list().forEach(function (ply) {
+				if (ply.state === "wait" && ply.id !== player.id) {
 					sendList.push(ply)
 				}
 			})
@@ -213,7 +244,7 @@ const Websocket = function (ws) {
 			}
 		}
 
-		sendList.forEach(function(ply){
+		sendList.forEach(function (ply) {
 			ply.ws.send(JSON.stringify({
 				__Type: "RoomsListUpdate",
 				Rooms: openRooms.list()
@@ -242,7 +273,7 @@ const Websocket = function (ws) {
 		player.ws.send(JSON.stringify({
 			__Type: "JoinToRoomRes",
 			Settings: room.settings,
-			PlayerNumber: room.players.findIndex(e => e.id === player.id) + 1
+			PlayerNumber: player.turn
 		}))
 	}
 
@@ -266,7 +297,7 @@ const Websocket = function (ws) {
 	 * @param result
 	 */
 	this.sendPlayerBackRes = function (player, room, result) {
-		if(result) {
+		if (result) {
 			this.ws.send(JSON.stringify({
 				__Type: "PlayerBackRes",
 				Result: true,
@@ -282,6 +313,19 @@ const Websocket = function (ws) {
 				Result: false
 			}))
 		}
+	}
+
+	this.sendDiceRolledRes = function (player, room) {
+		let that = this
+		room.players.forEach(function (ply) {
+			if (ply.id !== player.id) {
+				ply.ws.send(JSON.stringify({
+					__Type: "DiceRolledRes",
+					Dice: that.message.Dice,
+					PlayerNumber: player.turn
+				}))
+			}
+		})
 	}
 
 	/**
