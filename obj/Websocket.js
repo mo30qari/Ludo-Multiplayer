@@ -5,8 +5,6 @@ const OnlinePlayers = require("./OnlinePlayers").OnlinePlayers
 let onlinePlayers = new OnlinePlayers()
 const OpenRooms = require("./OpenRooms").OpenRooms
 let openRooms = new OpenRooms()
-const Database = require("./Database").Database
-let db = new Database()
 
 const Websocket = function (ws) {
 
@@ -48,6 +46,9 @@ const Websocket = function (ws) {
 					break
 				case "DiceRolledReq": // When player rolled dice
 					this.handleDiceRolledReq()
+					break
+				case "PlayerMovedReq": // When player moved
+					this.handlePlayerMovedReq()
 					break
 			}
 
@@ -200,6 +201,22 @@ const Websocket = function (ws) {
 		}
 	}
 
+	this.handlePlayerMovedReq = function () {
+		let player = new Player(this.ws)
+
+		if (player) {
+			let room = new Room(undefined, openRooms.getByPlayer(player).room.id)
+
+			if (room) {
+				this.sendPlayerMovedRes(player, room)
+			} else {
+				this.terminateConnection(room)
+			}
+		} else {
+			this.terminateConnection(player)
+		}
+	}
+
 	//End of HANDLE FUNCTIONS
 
 	// SEND RESPONSE FUNCTIONS
@@ -315,6 +332,10 @@ const Websocket = function (ws) {
 		}
 	}
 
+	/**
+	 * @param player
+	 * @param room
+	 */
 	this.sendDiceRolledRes = function (player, room) {
 		let that = this
 		room.players.forEach(function (ply) {
@@ -322,6 +343,20 @@ const Websocket = function (ws) {
 				ply.ws.send(JSON.stringify({
 					__Type: "DiceRolledRes",
 					Dice: that.message.Dice,
+					PlayerNumber: player.turn
+				}))
+			}
+		})
+	}
+
+	this.sendPlayerMovedRes = function (player, room) {
+		let that = this
+		room.players.forEach(function (ply) {
+			if (ply.id !== player.id) {
+				ply.ws.send(JSON.stringify({
+					__Type: "PlayerMovedRes",
+					Pawn: that.message.Pawn,
+					StepCount: that.message.StepCount,
 					PlayerNumber: player.turn
 				}))
 			}
