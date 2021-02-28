@@ -46,5 +46,17 @@
       "min": 1,
       "max": 6
     }
+  },
+  "PlayerMovedReq": {
+    "Pawn": {
+      "type": "number",
+      "min": 1,
+      "max": 4
+    },
+    "StepCount": {
+      "type": "number",
+      "min": 1,
+      "max": 6
+    }
   }
 }
