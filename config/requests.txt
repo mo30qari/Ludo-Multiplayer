@@ -58,3 +58,29 @@
 	"Dice":4,
 	"Turn":1
 }
+
+//////////////////////////////
+
+{
+    "__Type":"RoomDataReq",
+    "Dice":3,
+    "Turn":2,
+    "GameState":[
+        {
+            "Pawns":[
+                {"HowFar":0,"ColoredWay":0,"Selectable":0,"MayKicked":0},
+                {"HowFar":0,"ColoredWay":0,"Selectable":0,"MayKicked":0},
+                {"HowFar":0,"ColoredWay":0,"Selectable":0,"MayKicked":0},
+                {"HowFar":0,"ColoredWay":0,"Selectable":0,"MayKicked":0}
+            ]
+        },
+        {
+            "Pawns":[
+                {"HowFar":0,"ColoredWay":0,"Selectable":0,"MayKicked":0},
+                {"HowFar":0,"ColoredWay":0,"Selectable":0,"MayKicked":0},
+                {"HowFar":0,"ColoredWay":0,"Selectable":0,"MayKicked":0},
+                {"HowFar":0,"ColoredWay":0,"Selectable":0,"MayKicked":0}
+            ]
+        }
+    ]
+}

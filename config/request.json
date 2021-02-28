@@ -73,10 +73,6 @@
     "GameState": {
       "type": "object",
       "properties": [
-        "HowFar",
-        "ColoredWay",
-        "Selectable",
-        "MayKicked"
       ]
     }
   }
