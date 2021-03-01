@@ -125,6 +125,7 @@ const Websocket = function (ws) {
 				if (result.status) {// Room confirmed joining player
 					player.setProperty("roomId", room.id)// Add room id to the player's properties
 					player.setProperty("turn", room.players.findIndex(e => e.id === player.id) + 1)
+					player.setProperty("absence", 0)
 
 					this.sendJoinToRoomRes(player, room)// To the joined player
 					this.sendRoomsListUpdate(player, true, false)// To all waiting players
@@ -251,6 +252,10 @@ const Websocket = function (ws) {
 		}
 	}
 
+	/**
+	 *
+	 * @param room
+	 */
 	this.handleTimeOver = function (room) {
 		this.sendTurnSkipped(room)
 		room.startTimer(DELAY)
@@ -408,6 +413,10 @@ const Websocket = function (ws) {
 		})
 	}
 
+	/**
+	 *
+	 * @param room
+	 */
 	this.sendTurnSkipped = function (room) {
 		room.players.forEach(function (ply) {
 			ply.ws.send(JSON.stringify({
