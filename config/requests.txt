@@ -9,7 +9,7 @@
 	"__Type":"CreateRoomReq",
 	"Settings": {
 		"SafeSquares": true,
-		"Capacity": 3,
+		"Capacity": 2,
 		"FirstTurnExit": false
 	}
 }
