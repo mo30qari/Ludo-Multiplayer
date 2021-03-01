@@ -114,10 +114,30 @@ const Room = function (creator, id = undefined, settings = undefined) {
 		return result
 	}
 
+	/**
+	 *
+	 * @param key
+	 * @param value
+	 */
 	this.setData = function (key, value) {
 		this.data[key] = value
 
 		openRooms.update(this, "data", this.data)
+	}
+
+	this.startTimer = function (delay = 10000) {
+		let that = this
+
+		setTimeout(function () {
+			that.timeOver()
+		}, delay)
+	}
+
+	this.timeOver = function () {
+		console.log(this.id + ": Time Over!")
+		let delay = Math.random() * 100000
+		this.startTimer(delay)
+		console.log("New timer started for room: " + this.id + " for " + delay + " ms")
 	}
 
 }
