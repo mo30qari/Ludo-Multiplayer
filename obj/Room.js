@@ -24,6 +24,7 @@ const Room = function (creator, id = undefined, settings = undefined) {
 		turn: 1,// Which player should roll dice?
 		dice: 0// What's the number of latest dice?
 	}
+	this.startTime = undefined
 
 	if (this.creator && !this.id) {// New room
 		this.id = openRooms.add(this)
@@ -128,16 +129,26 @@ const Room = function (creator, id = undefined, settings = undefined) {
 	this.startTimer = function (delay = 10000) {
 		let that = this
 
+		this.setProperty("startTime", Date.now())
 		setTimeout(function () {
 			that.timeOver()
 		}, delay)
 	}
 
 	this.timeOver = function () {
-		console.log(this.id + ": Time Over!")
-		let delay = Math.random() * 100000
-		this.startTimer(delay)
-		console.log("New timer started for room: " + this.id + " for " + delay + " ms")
+		this.nextTurn()
+		const WS = require("./Websocket").Websocket
+		let ws = new WS()
+
+		ws.handleTimeOver(this)
+	}
+
+	this.nextTurn = function () {// Resigned players must be considered
+		if (this.settings.Capacity === this.data.turn) {
+			this.setData("turn", 1)
+		} else {
+			this.setData("turn", this.data.turn + 1)
+		}
 	}
 
 }

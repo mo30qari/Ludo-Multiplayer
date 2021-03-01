@@ -6,6 +6,8 @@ let onlinePlayers = new OnlinePlayers()
 const OpenRooms = require("./OpenRooms").OpenRooms
 let openRooms = new OpenRooms()
 
+let DELAY = 10000
+
 const Websocket = function (ws) {
 
 	this.ws = ws
@@ -155,8 +157,9 @@ const Websocket = function (ws) {
 
 			ply.setProperty("state", "play")
 			that.sendGameStart(player, room)
-			room.startTimer(30000)
+
 		})
+		room.startTimer(DELAY)
 	}
 
 	/**
@@ -246,6 +249,11 @@ const Websocket = function (ws) {
 		} else {
 			this.terminateConnection(player)
 		}
+	}
+
+	this.handleTimeOver = function (room) {
+		this.sendTurnSkipped(room)
+		room.startTimer(DELAY)
 	}
 
 	//End of HANDLE FUNCTIONS
@@ -387,6 +395,7 @@ const Websocket = function (ws) {
 	 */
 	this.sendPlayerMovedRes = function (player, room) {
 		let that = this
+
 		room.players.forEach(function (ply) {
 			if (ply.id !== player.id) {
 				ply.ws.send(JSON.stringify({
@@ -396,6 +405,18 @@ const Websocket = function (ws) {
 					PlayerNumber: player.turn
 				}))
 			}
+		})
+	}
+
+	this.sendTurnSkipped = function (room) {
+		room.players.forEach(function (ply) {
+			ply.ws.send(JSON.stringify({
+				__Type: "TurnSkipped",
+				Turn: room.data.turn,
+				Dice: room.data.dice,
+				GameState: room.data.gameState,
+				Date: Date.now()
+			}))
 		})
 	}
 
