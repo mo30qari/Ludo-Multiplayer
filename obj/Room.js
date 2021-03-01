@@ -1,5 +1,8 @@
 const OpenRooms = require("./OpenRooms").OpenRooms
 let openRooms = new OpenRooms()
+const Player = require("./Player").Player
+
+
 
 /**
  * This object handles all about rooms. The player first
@@ -126,6 +129,10 @@ const Room = function (creator, id = undefined, settings = undefined) {
 		openRooms.update(this, "data", this.data)
 	}
 
+	/**
+	 *
+	 * @param delay
+	 */
 	this.startTimer = function (delay = 10000) {
 		let that = this
 
@@ -135,20 +142,47 @@ const Room = function (creator, id = undefined, settings = undefined) {
 		}, delay)
 	}
 
+	/**
+	 *
+	 */
 	this.timeOver = function () {
+		let ply = this.players.find(e => e.turn === this.data.turn)
+
+		if (ply) {
+			let player = new Player(ply.ws);console.log(player)
+
+			player.setProperty("absence", player.absence + 1)
+			if (player.getProperty("absence") >= 3){
+				this.removePlayer(player)
+			}
+		}
 		this.nextTurn()
+
 		const WS = require("./Websocket").Websocket
 		let ws = new WS()
 
 		ws.handleTimeOver(this)
 	}
 
+	/**
+	 *
+	 */
 	this.nextTurn = function () {// Resigned players must be considered
 		if (this.settings.Capacity === this.data.turn) {
 			this.setData("turn", 1)
 		} else {
 			this.setData("turn", this.data.turn + 1)
 		}
+	}
+
+	/**
+	 *
+	 * @param player
+	 */
+	this.removePlayer = function (player) {
+		this.players[this.players.indexOf(player)] = null
+
+		this.setProperty("players", this.players)
 	}
 
 }
