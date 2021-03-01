@@ -149,11 +149,13 @@ const Websocket = function (ws) {
 	 */
 	this.handleGameStart = function (room) {
 		let that = this
+
 		room.players.forEach(function (player) {
 			let ply = new Player(player.ws)
 
 			ply.setProperty("state", "play")
 			that.sendGameStart(player, room)
+			room.startTimer(30000)
 		})
 	}
 
@@ -223,6 +225,9 @@ const Websocket = function (ws) {
 		}
 	}
 
+	/**
+	 *
+	 */
 	this.handleRoomDataReq = function () {
 		let player = new Player(this.ws)
 
