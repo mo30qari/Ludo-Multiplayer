@@ -2,6 +2,7 @@ const OpenRooms = require("./OpenRooms").OpenRooms
 let openRooms = new OpenRooms()
 
 let DELAY = 10000
+let timer
 
 /**
  * This object handles all about rooms. The player first
@@ -132,10 +133,12 @@ const Room = function (creator, id = undefined, settings = undefined) {
 	 *
 	 */
 	this.startTimer = function () {
-		let that = this
+		clearTimeout(timer)
 
 		this.setProperty("startTime", Date.now())
-		setTimeout(function () {
+		let that = this
+
+		timer = setTimeout(function () {
 			that.timeOver()
 		}, DELAY)
 	}

@@ -14,6 +14,7 @@ app.get('/', function (req, res) {
 })
 
 app.get('/register/:username', function (req, res) {
+	res.setHeader('Access-Control-Allow-Origin', 'https://preview.construct.net')
 	res.setHeader('Content-Type', 'application/json')
 
 	let result = valid.validateString(req.params["username"], 3, 10)

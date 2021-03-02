@@ -159,7 +159,7 @@ const Websocket = function (ws) {
 			that.sendGameStart(player, room)
 
 		})
-		room.startTimer(DELAY)
+		room.startTimer()
 	}
 
 	/**
@@ -201,6 +201,7 @@ const Websocket = function (ws) {
 				room.setData("dice", this.message.Dice)
 
 				this.sendDiceRolledRes(player, room)
+				room.startTimer()
 			} else {
 				this.terminateConnection(room)
 			}
@@ -220,6 +221,7 @@ const Websocket = function (ws) {
 
 			if (room.id) {
 				this.sendPlayerMovedRes(player, room)
+				room.startTimer()
 			} else {
 				this.terminateConnection(room)
 			}
@@ -257,7 +259,7 @@ const Websocket = function (ws) {
 	 */
 	this.handleTimeOver = function (room) {
 		this.sendTurnSkipped(room)
-		room.startTimer(DELAY)
+		room.startTimer()
 	}
 
 	//End of HANDLE FUNCTIONS
