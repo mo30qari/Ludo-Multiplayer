@@ -22,7 +22,7 @@ app.get('/register/:username', function (req, res) {
 		let player = new Player(undefined)
 
 		res.write(JSON.stringify({
-			Status: true,
+			status: true,
 			Player: {
 				PlayerID: player.id,
 				Avatar: player.avatar
