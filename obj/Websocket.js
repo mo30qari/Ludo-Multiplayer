@@ -126,6 +126,7 @@ const Websocket = function (ws) {
 					player.setProperty("roomId", room.id)// Add room id to the player's properties
 					player.setProperty("turn", room.players.findIndex(e => e.id === player.id) + 1)
 					player.setProperty("absence", 0)
+					player.setProperty("resigned", 0)
 
 					this.sendJoinToRoomRes(player, room)// To the joined player
 					this.sendRoomsListUpdate(player, true, false)// To all waiting players
@@ -383,7 +384,7 @@ const Websocket = function (ws) {
 	this.sendDiceRolledRes = function (player, room) {
 		let that = this
 		room.players.forEach(function (ply) {
-			if (ply.id !== player.id) {
+			if (!ply.resigned && ply.id !== player.id) {
 				ply.ws.send(JSON.stringify({
 					__Type: "DiceRolledRes",
 					Dice: that.message.Dice,
@@ -402,7 +403,7 @@ const Websocket = function (ws) {
 		let that = this
 
 		room.players.forEach(function (ply) {
-			if (ply.id !== player.id) {
+			if (!ply.resigned && ply.id !== player.id) {
 				ply.ws.send(JSON.stringify({
 					__Type: "PlayerMovedRes",
 					Pawn: that.message.Pawn,
@@ -419,13 +420,15 @@ const Websocket = function (ws) {
 	 */
 	this.sendTurnSkipped = function (room) {
 		room.players.forEach(function (ply) {
-			ply.ws.send(JSON.stringify({
-				__Type: "TurnSkipped",
-				Turn: room.data.turn,
-				Dice: room.data.dice,
-				GameState: room.data.gameState,
-				Date: Date.now()
-			}))
+			if (!ply.resigned) {
+				ply.ws.send(JSON.stringify({
+					__Type: "TurnSkipped",
+					Turn: room.data.turn,
+					Dice: room.data.dice,
+					GameState: room.data.gameState,
+					Date: Date.now()
+				}))
+			}
 		})
 	}
 
