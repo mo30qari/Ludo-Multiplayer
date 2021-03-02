@@ -8,7 +8,7 @@ let timer
  * This object handles all about rooms. The player first
  * creates a room and sends its settings. After that the
  * room is visible for other players. The room manages by
- * states: "wait", "play" & "closed".
+ * states: "wait" & "play".
  * @param creator
  * @param id
  * @param settings
@@ -191,6 +191,14 @@ const Room = function (creator, id = undefined, settings = undefined) {
 		const WS = require("./Websocket").Websocket
 		let ws = new WS()
 		ws.sendResignUpdate(player, this)
+	}
+
+	/**
+	 *
+	 */
+	this.delete = function () {
+		clearTimeout(timer)
+		openRooms.remove(this)
 	}
 
 }

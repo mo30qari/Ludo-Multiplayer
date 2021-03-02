@@ -56,6 +56,9 @@ const Websocket = function (ws) {
 				case "ResignReq":
 					this.handleResignReq()
 					break
+				case "EndGameReq":
+					this.handleEndGameReq()
+					break
 			}
 
 		} else {// Unauthorized request
@@ -273,6 +276,22 @@ const Websocket = function (ws) {
 					this.sendResignUpdate(ply, room)
 				}
  			} else {
+				this.terminateConnection(room)
+			}
+		} else {
+			this.terminateConnection(player)
+		}
+	}
+
+	this.handleEndGameReq = function () {
+		let player = new Player(this.ws)
+
+		if (player.id) {
+			let room = new Room(undefined, openRooms.getByPlayer(player).room.id)
+
+			if (room.id) {
+				room.delete()
+			} else {
 				this.terminateConnection(room)
 			}
 		} else {
