@@ -1,7 +1,7 @@
 const OpenRooms = require("./OpenRooms").OpenRooms
 let openRooms = new OpenRooms()
 
-let DELAY = 10000
+let DELAY = 15000
 let timer
 
 /**
@@ -149,7 +149,7 @@ const Room = function (creator, id = undefined, settings = undefined) {
 	this.timeOver = function () {
 		let player = this.players.find(e => e.turn === this.data.turn)
 
-		if (player) {
+		if (player && player.absence < 3) {
 			player.absence++
 			this.setProperty("players", this.players)
 			if (player.absence >= 3){

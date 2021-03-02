@@ -425,8 +425,7 @@ const Websocket = function (ws) {
 					__Type: "TurnSkipped",
 					Turn: room.data.turn,
 					Dice: room.data.dice,
-					GameState: room.data.gameState,
-					Date: Date.now()
+					GameState: room.data.gameState
 				}))
 			}
 		})
