@@ -6,8 +6,6 @@ let onlinePlayers = new OnlinePlayers()
 const OpenRooms = require("./OpenRooms").OpenRooms
 let openRooms = new OpenRooms()
 
-let DELAY = 10000
-
 const Websocket = function (ws) {
 
 	this.ws = ws
