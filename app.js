@@ -9,12 +9,16 @@ const WS = require("./obj/Websocket").Websocket
 
 let valid = new Validate()
 
+app.use(function(req, res, next) {
+	res.header("Access-Control-Allow-Origin", "*")
+	next()
+})
+
 app.get('/', function (req, res) {
 	res.send("Ludo Multiplayer! Go to Register to start the game.")
 })
 
 app.get('/register/:username', function (req, res) {
-	res.setHeader('Access-Control-Allow-Origin', "*")
 	res.setHeader('Content-Type', 'application/json')
 
 	let result = valid.validateString(req.params["username"], 3, 10)
