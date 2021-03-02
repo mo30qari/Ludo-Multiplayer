@@ -16,7 +16,7 @@ app.get('/', function (req, res) {
 app.get('/register/:username', function (req, res) {
 	res.setHeader('Content-Type', 'application/json')
 
-	let result = valid.validateString(req.params["username"], 5, 20)
+	let result = valid.validateString(req.params["username"], 3, 10)
 
 	if (result.status) {
 		let player = new Player(undefined)

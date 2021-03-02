@@ -366,7 +366,7 @@ const Websocket = function (ws) {
 				Turn: room.data.turn,
 				Dice: room.data.dice,
 				GameState: room.data.gameState,
-				ElapsedTime: player.elapsedTime,
+				ElapsedTime: (Date.now() - room.startTime) / 1000,
 				Players: this.formatPlayers(room.players)
 			}))
 		} else {
