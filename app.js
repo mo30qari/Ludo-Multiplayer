@@ -1,7 +1,6 @@
 const express = require("express")
 const app = express()
 const Player = require("./obj/Player").Player
-const Room = require("./obj/Room").Room
 const Validate = require("./obj/Validate").Validate
 const WebSocketServer = require("ws").Server
 const wss = new WebSocketServer({port: 8090})
@@ -42,7 +41,7 @@ app.get('/register/:username', function (req, res) {
 	res.end()
 })
 
-wss.on('connection', function (ws, req, client) {
+wss.on('connection', function (ws) {
 	let socket = new WS(ws)
 
 	ws.onopen = socket.open()
