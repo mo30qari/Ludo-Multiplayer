@@ -146,21 +146,19 @@ const Room = function (creator, id = undefined, settings = undefined) {
 	 *
 	 */
 	this.timeOver = function () {
-		let ply = this.players.find(e => e.turn === this.data.turn)
+		let player = this.players.find(e => e.turn === this.data.turn)
 
-		if (ply) {
-			let player = new Player(ply.ws);console.log(player)
-
-			player.setProperty("absence", player.absence + 1)
-			if (player.getProperty("absence") >= 3){
-				this.removePlayer(player)
+		if (player) {
+			player.absence++
+			this.setProperty("players", this.players)
+			if (player.absence >= 3){
+				this.resignPlayer(player)
 			}
 		}
 		this.nextTurn()
 
 		const WS = require("./Websocket").Websocket
 		let ws = new WS()
-
 		ws.handleTimeOver(this)
 	}
 
@@ -179,8 +177,8 @@ const Room = function (creator, id = undefined, settings = undefined) {
 	 *
 	 * @param player
 	 */
-	this.removePlayer = function (player) {
-		this.players[this.players.indexOf(player)] = null
+	this.resignPlayer = function (player) {
+		this.players[this.players.indexOf(player)].resigned = 1
 
 		this.setProperty("players", this.players)
 	}
