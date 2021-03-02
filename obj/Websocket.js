@@ -53,6 +53,9 @@ const Websocket = function (ws) {
 				case "RoomDataReq":
 					this.handleRoomDataReq()
 					break
+				case "ResignReq":
+					this.handleResignReq()
+					break
 			}
 
 		} else {// Unauthorized request
@@ -240,10 +243,10 @@ const Websocket = function (ws) {
 			let room = new Room(undefined, openRooms.getByPlayer(player).room.id)
 
 			if (room.id) {
-				//store data in room.data.gameState
 				room.setData("gameState", this.message.GameState)
 				room.setData("dice", this.message.Dice)
 				room.setData("turn", this.message.Turn)
+
 				console.log("Player:" + player.id + " saved data in room: " + room.id)
 			} else {
 				this.terminateConnection(room)
@@ -255,11 +258,26 @@ const Websocket = function (ws) {
 
 	/**
 	 *
-	 * @param room
 	 */
-	this.handleTimeOver = function (room) {
-		this.sendTurnSkipped(room)
-		room.startTimer()
+	this.handleResignReq = function () {
+		let player = new Player(this.ws)
+
+		if (player.id) {
+			let room = new Room(undefined, openRooms.getByPlayer(player).room.id)
+
+			if (room.id) {
+				let ply = room.players.find(e => e.id === player.id)
+
+				if (ply) {
+					room.resignPlayer(ply)
+					this.sendResignUpdate(ply, room)
+				}
+ 			} else {
+				this.terminateConnection(room)
+			}
+		} else {
+			this.terminateConnection(player)
+		}
 	}
 
 	//End of HANDLE FUNCTIONS
@@ -426,6 +444,17 @@ const Websocket = function (ws) {
 					Turn: room.data.turn,
 					Dice: room.data.dice,
 					GameState: room.data.gameState
+				}))
+			}
+		})
+	}
+
+	this.sendResignUpdate = function (player, room) {
+		room.players.forEach(function (ply) {
+			if (!ply.resigned && ply.id !== player.id) {console.log(ply)
+				ply.ws.send(JSON.stringify({
+					__Type: "ResignUpdate",
+					PlayerNumber: player.turn
 				}))
 			}
 		})

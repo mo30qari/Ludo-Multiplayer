@@ -75,5 +75,12 @@
       "properties": [
       ]
     }
+  },
+  "ResignReq": {
+    "PlayerNumber": {
+      "type": "number",
+      "min": 1,
+      "max": 4
+    }
   }
 }

@@ -1,7 +1,7 @@
 const OpenRooms = require("./OpenRooms").OpenRooms
 let openRooms = new OpenRooms()
 
-let DELAY = 15000
+let DELAY = 5000
 let timer
 
 /**
@@ -148,11 +148,13 @@ const Room = function (creator, id = undefined, settings = undefined) {
 	 */
 	this.timeOver = function () {
 		let player = this.players.find(e => e.turn === this.data.turn)
+		let sendTurnSkipped = true
 
 		if (player && player.absence < 3) {
 			player.absence++
 			this.setProperty("players", this.players)
 			if (player.absence >= 3){
+				sendTurnSkipped = false
 				this.resignPlayer(player)
 			}
 		}
@@ -160,7 +162,10 @@ const Room = function (creator, id = undefined, settings = undefined) {
 
 		const WS = require("./Websocket").Websocket
 		let ws = new WS()
-		ws.handleTimeOver(this)
+		if (sendTurnSkipped)
+			ws.sendTurnSkipped(this)
+
+		this.startTimer()
 	}
 
 	/**
@@ -182,6 +187,10 @@ const Room = function (creator, id = undefined, settings = undefined) {
 		this.players[this.players.indexOf(player)].resigned = 1
 
 		this.setProperty("players", this.players)
+
+		const WS = require("./Websocket").Websocket
+		let ws = new WS()
+		ws.sendResignUpdate(player, this)
 	}
 
 }
