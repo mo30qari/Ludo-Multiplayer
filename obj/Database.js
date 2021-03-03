@@ -101,13 +101,13 @@ const Database = function () {
 	this.writeOnFile = function (fileName, data) {
 		let fs = require("fs")
 
-		try {//BUG https://trello.com/c/vBYXYnMc
-			fs.writeFile(fileName + ".json", JSON.stringify(data, null, 4), function (err){
-				if (err !== null)
-					console.log(err)
+		try {// The codes in this block sometimes make problem (JSON circular structure)
+			fs.writeFile(fileName + ".json", JSON.stringify(data, null, 4), function (error){
+				if (error !== null)
+					console.log(error.message)
 			})
-		} catch (e) {
-			console.log(e)
+		} catch (error) {
+			console.log(error.message)
 		}
 
 	}
