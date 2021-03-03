@@ -106,8 +106,8 @@ const Database = function () {
 				if (error !== null)
 					console.log(error.message)
 			})
-		} catch (error) {
-			console.log(error.message)
+		} catch (e) {
+			console.log(e.message)
 		}
 
 	}
