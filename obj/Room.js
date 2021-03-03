@@ -1,7 +1,7 @@
 const OpenRooms = require("./OpenRooms").OpenRooms
 let openRooms = new OpenRooms()
 
-let DELAY = 25000
+let DELAY = 5000
 let timer
 
 /**
@@ -185,7 +185,8 @@ const Room = function (creator, id = undefined, settings = undefined) {
 		if (index === presentPlayers.length - 1) {
 			this.setData("turn", presentPlayers[0])
 		} else {
-			this.setData("turn", presentPlayers[index++])
+			this.setData("turn", presentPlayers[++index])
+
 		}
 	}
 
