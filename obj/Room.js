@@ -186,7 +186,6 @@ const Room = function (creator, id = undefined, settings = undefined) {
 			this.setData("turn", presentPlayers[0])
 		} else {
 			this.setData("turn", presentPlayers[++index])
-
 		}
 	}
 
