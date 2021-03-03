@@ -113,7 +113,7 @@ const Validate = function () {
 
 					if (key !== "__Type") {// The __Type is already checked.
 
-						switch (structure[key].type) {
+						switch (structure[key].type) {//The bug is in skype (bug:1)
 							case "string":
 								r = this.validateString(value, structure[key].min, structure[key].max)
 								if (!r.status) {

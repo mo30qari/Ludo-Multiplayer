@@ -98,7 +98,7 @@ const Database = function () {
 	 * @param fileName
 	 * @param data
 	 */
-	this.writeOnFile = function (fileName, data) {
+	this.writeOnFile = function (fileName, data) {console.log(data)
 		let fs = require("fs")
 
 		fs.writeFile(fileName + ".json", JSON.stringify(data, null, 4), function (err){

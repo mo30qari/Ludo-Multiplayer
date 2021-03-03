@@ -1,7 +1,7 @@
 const OpenRooms = require("./OpenRooms").OpenRooms
 let openRooms = new OpenRooms()
 
-let DELAY = 5000
+let DELAY = 25000
 let timer
 
 /**
@@ -171,11 +171,21 @@ const Room = function (creator, id = undefined, settings = undefined) {
 	/**
 	 *
 	 */
-	this.nextTurn = function () {// Resigned players must be considered
-		if (this.settings.Capacity === this.data.turn) {
-			this.setData("turn", 1)
+	this.nextTurn = function () {
+		let presentPlayers = []
+
+		this.players.forEach(function (player){
+			if (!player.resigned) {
+				presentPlayers.push(player.turn)
+			}
+		})
+
+		let index = presentPlayers.indexOf(this.data.turn)
+
+		if (index === presentPlayers.length - 1) {
+			this.setData("turn", presentPlayers[0])
 		} else {
-			this.setData("turn", this.data.turn + 1)
+			this.setData("turn", presentPlayers[index++])
 		}
 	}
 

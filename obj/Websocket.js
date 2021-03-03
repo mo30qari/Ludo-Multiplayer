@@ -470,7 +470,7 @@ const Websocket = function (ws) {
 
 	this.sendResignUpdate = function (player, room) {
 		room.players.forEach(function (ply) {
-			if (!ply.resigned && ply.id !== player.id) {console.log(ply)
+			if (!ply.resigned && ply.id !== player.id) {
 				ply.ws.send(JSON.stringify({
 					__Type: "ResignUpdate",
 					PlayerNumber: player.turn
