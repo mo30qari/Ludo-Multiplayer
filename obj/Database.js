@@ -101,10 +101,15 @@ const Database = function () {
 	this.writeOnFile = function (fileName, data) {console.log(data)
 		let fs = require("fs")
 
-		fs.writeFile(fileName + ".json", JSON.stringify(data, null, 4), function (err){
-			if (err !== null)
-				console.log(err)
-		})
+		try {
+			fs.writeFile(fileName + ".json", JSON.stringify(data, null, 4), function (err){
+				if (err !== null)
+					console.log(err)
+			})
+		} catch (e) {
+			console.log(e)
+		}
+
 	}
 
 }
