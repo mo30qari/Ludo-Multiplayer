@@ -111,35 +111,38 @@ const Validate = function () {
 
 				for (const [key, value] of Object.entries(req)) {// Iterating in request
 
-					if (key !== "__Type") {// The __Type is already checked.
-
-						switch (structure[key].type) {//BUG https://trello.com/c/74v2rgWq
-							case "string":
-								r = this.validateString(value, structure[key].min, structure[key].max)
-								if (!r.status) {
-									result.errors.push(key + ": " + r.errors)
-								}
-								break
-							case "number":
-								r = this.validateNumber(value, structure[key].min, structure[key].max)
-								if (!r.status) {
-									result.errors.push(key + ": " + r.errors)
-								}
-								break
-							case "bool":
-								r = this.validateBool(value)
-								if (!r.status) {
-									result.errors.push(key + ": " + r.errors)
-								}
-								break
-							case "object":
-								r = this.validateObject(value, structure[key].properties)
-								if (!r.status) {
-									result.errors.push(key + ": " + r.errors)
-								}
-								break
-							default:
-								result.errors.push("The type of property doesn't exist!")
+					if (key !== "__Type") {// The switch tries to handle the request, if it can't catch an error
+						try {
+							switch (structure[key].type) {//BUG https://trello.com/c/74v2rgWq
+								case "string":
+									r = this.validateString(value, structure[key].min, structure[key].max)
+									if (!r.status) {
+										result.errors.push(key + ": " + r.errors)
+									}
+									break
+								case "number":
+									r = this.validateNumber(value, structure[key].min, structure[key].max)
+									if (!r.status) {
+										result.errors.push(key + ": " + r.errors)
+									}
+									break
+								case "bool":
+									r = this.validateBool(value)
+									if (!r.status) {
+										result.errors.push(key + ": " + r.errors)
+									}
+									break
+								case "object":
+									r = this.validateObject(value, structure[key].properties)
+									if (!r.status) {
+										result.errors.push(key + ": " + r.errors)
+									}
+									break
+								default:
+									result.errors.push("The type of property doesn't exist!")
+							}
+						} catch (e) {
+							result.errors.push("The request isn't valid!")
 						}
 
 					}
