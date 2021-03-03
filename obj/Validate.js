@@ -1,6 +1,10 @@
 const format = require("../config/request.json")
 const Validate = function () {
 
+	/**
+	 * @param type
+	 * @return {{errors: [], status: boolean}}
+	 */
 	this.validateType = function (type) {// Every request has a __Type property that shows type of the request. This is always string...
 		let result = {status: true, errors: []}
 
@@ -23,6 +27,12 @@ const Validate = function () {
 		return result
 	}
 
+	/**
+	 * @param str
+	 * @param min
+	 * @param max
+	 * @return {{errors: [], status: boolean}}
+	 */
 	this.validateString = function (str, min, max) {
 		let result = {status: true, errors: []}
 
@@ -46,6 +56,12 @@ const Validate = function () {
 		return result
 	}
 
+	/**
+	 * @param num
+	 * @param min
+	 * @param max
+	 * @return {{errors: [], status: boolean}}
+	 */
 	this.validateNumber = function (num, min, max) {
 		let result = {status: true, errors: []}
 
@@ -64,6 +80,10 @@ const Validate = function () {
 		return result
 	}
 
+	/**
+	 * @param bool
+	 * @return {{errors: [], status: boolean}}
+	 */
 	this.validateBool = function (bool) {
 		let result = {status: true, errors: []}
 
@@ -78,6 +98,11 @@ const Validate = function () {
 		return result
 	}
 
+	/**
+	 * @param obj
+	 * @param props
+	 * @return {{errors: [], status: boolean}}
+	 */
 	this.validateObject = function (obj, props) {// It should be better in the near future.
 		let result = {status: true, errors: []}
 
@@ -98,6 +123,10 @@ const Validate = function () {
 		return result
 	}
 
+	/**
+	 * @param req
+	 * @return {{errors: [], status: boolean}}
+	 */
 	this.validateRequest = function (req) {
 		let result = {status: true, errors: []}
 
