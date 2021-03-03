@@ -98,10 +98,10 @@ const Database = function () {
 	 * @param fileName
 	 * @param data
 	 */
-	this.writeOnFile = function (fileName, data) {console.log(data)
+	this.writeOnFile = function (fileName, data) {
 		let fs = require("fs")
 
-		try {
+		try {//BUG https://trello.com/c/vBYXYnMc
 			fs.writeFile(fileName + ".json", JSON.stringify(data, null, 4), function (err){
 				if (err !== null)
 					console.log(err)
