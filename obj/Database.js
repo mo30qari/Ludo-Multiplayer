@@ -7,8 +7,6 @@ let PLAYERS = []// As a table
  */
 const Database = function () {
 
-	//PLAYER FUNCTIONS
-
 	/**
 	 * This function assigns an Id to the new player
 	 * and pushes it into <PLAYERS> that is as a
@@ -91,8 +89,6 @@ const Database = function () {
 		return result
 	}
 
-	//End of PLAYER FUNCTIONS
-
 	/**
 	 * This function get file name (without file format) and data and inserts data into the file.
 	 * @param fileName
@@ -109,7 +105,6 @@ const Database = function () {
 		} catch (e) {
 			console.log(e.message)
 		}
-
 	}
 
 }

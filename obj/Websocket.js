@@ -286,7 +286,7 @@ const Websocket = function (ws) {
 	this.handleEndGameReq = function () {
 		let player = new Player(this.ws)
 
-		if (player.id) {
+		if (player.id) {console.log(openRooms.getByPlayer(player))
 			let room = new Room(undefined, openRooms.getByPlayer(player).room.id)
 
 			if (room.id) {

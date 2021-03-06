@@ -1,7 +1,7 @@
 const OpenRooms = require("./OpenRooms").OpenRooms
 let openRooms = new OpenRooms()
 
-let DELAY = 5000
+let DELAY = 15000
 let timer
 
 /**
