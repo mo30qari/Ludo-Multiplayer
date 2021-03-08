@@ -283,16 +283,20 @@ const Websocket = function (ws) {
 		}
 	}
 
+	/**
+	 *
+	 */
 	this.handleEndGameReq = function () {
 		let player = new Player(this.ws)
 
-		if (player.id) {console.log(openRooms.getByPlayer(player))
-			let room = new Room(undefined, openRooms.getByPlayer(player).room.id)
+		if (player.id) {
+			let rom = new Room(undefined, openRooms.getByPlayer(player))
 
-			if (room.id) {
+			if (rom.status) {
+				let room = rom.room.id
 				room.delete()
 			} else {
-				this.terminateConnection(room)
+				this.terminateConnection(rom)
 			}
 		} else {
 			this.terminateConnection(player)
