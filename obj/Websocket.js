@@ -201,15 +201,21 @@ const Websocket = function (ws) {
 		let player = new Player(this.ws)
 
 		if (player.id) {
-			let room = new Room(undefined, openRooms.getByPlayer(player).room.id)
+			let rom = openRooms.getByPlayer(player)
 
-			if (room.id) {
-				room.setData("dice", this.message.Dice)
+			if (rom.status) {
+				let room = new Room(undefined, rom.room.id)
 
-				this.sendDiceRolledRes(player, room)
-				room.startTimer()
+				if (room.id) {
+					room.setData("dice", this.message.Dice)
+
+					this.sendDiceRolledRes(player, room)
+					room.startTimer()
+				} else {
+					this.terminateConnection(room)
+				}
 			} else {
-				this.terminateConnection(room)
+				this.terminateConnection(rom)
 			}
 		} else {
 			this.terminateConnection(player)
@@ -223,13 +229,19 @@ const Websocket = function (ws) {
 		let player = new Player(this.ws)
 
 		if (player.id) {
-			let room = new Room(undefined, openRooms.getByPlayer(player).room.id)
+			let rom = openRooms.getByPlayer(player)
 
-			if (room.id) {
-				this.sendPlayerMovedRes(player, room)
-				room.startTimer()
+			if (rom.status) {
+				let room = new Room(undefined, rom.room.id)
+
+				if (room.id) {
+					this.sendPlayerMovedRes(player, room)
+					room.startTimer()
+				} else {
+					this.terminateConnection(room)
+				}
 			} else {
-				this.terminateConnection(room)
+				this.terminateConnection(rom)
 			}
 		} else {
 			this.terminateConnection(player)
@@ -243,16 +255,22 @@ const Websocket = function (ws) {
 		let player = new Player(this.ws)
 
 		if (player.id) {
-			let room = new Room(undefined, openRooms.getByPlayer(player).room.id)
+			let rom = openRooms.getByPlayer(player)
 
-			if (room.id) {
-				room.setData("gameState", this.message.GameState)
-				room.setData("dice", this.message.Dice)
-				room.setData("turn", this.message.Turn)
+			if (rom.status) {
+				let room = new Room(undefined, rom.room.id)
 
-				console.log("Player:" + player.id + " saved data in room: " + room.id)
+				if (room.id) {
+					room.setData("gameState", this.message.GameState)
+					room.setData("dice", this.message.Dice)
+					room.setData("turn", this.message.Turn)
+
+					console.log("Player:" + player.id + " saved data in room: " + room.id)
+				} else {
+					this.terminateConnection(room)
+				}
 			} else {
-				this.terminateConnection(room)
+				this.terminateConnection(rom)
 			}
 		} else {
 			this.terminateConnection(player)
@@ -268,7 +286,7 @@ const Websocket = function (ws) {
 		if (player.id) {
 			let rom = openRooms.getByPlayer(player)
 
-			if(rom.status){
+			if (rom.status) {
 				let room = new Room(undefined, rom.room.id)
 
 				if (room.id) {
@@ -280,7 +298,7 @@ const Websocket = function (ws) {
 				} else {
 					this.terminateConnection(room)
 				}
-			}else {
+			} else {
 				this.terminateConnection(rom)
 			}
 		} else {
@@ -300,8 +318,8 @@ const Websocket = function (ws) {
 			if (rom.status) {
 				let room = new Room(undefined, rom.room.id)
 
-				if (room.id){
-					room.players.forEach(function (ply){
+				if (room.id) {
+					room.players.forEach(function (ply) {
 						let plyr = new Player(ply.ws)
 						plyr.setProperty("state", "wait")
 					})
@@ -537,13 +555,13 @@ const Websocket = function (ws) {
 	this.close = function () {
 		let player = new Player(this.ws)
 
-		if(player.id) {
+		if (player.id) {
 			let rom = openRooms.getByPlayer(player)
 
 			if (rom.status) {
 				let room = new Room(undefined, rom.room.id)
 
-				if (room.id){
+				if (room.id) {
 					if (room.players.length === 1 && room.players.find(e => e.id === player.id)) {// Delete room only when the player is in the room
 						room.delete()
 						this.sendRoomsListUpdate(player, true, false)// To all waiting players except the player
