@@ -273,7 +273,6 @@ const Websocket = function (ws) {
 
 				if (ply) {
 					room.resignPlayer(ply)
-					this.sendResignUpdate(ply, room)
 				}
  			} else {
 				this.terminateConnection(room)

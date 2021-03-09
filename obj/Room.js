@@ -197,6 +197,10 @@ const Room = function (creator, id = undefined, settings = undefined) {
 		this.players[this.players.indexOf(player)].resigned = 1
 
 		this.setProperty("players", this.players)
+
+		const WS = require("./Websocket").Websocket
+		let ws = new WS()
+		ws.sendResignUpdate(player, this)
 	}
 
 	/**
