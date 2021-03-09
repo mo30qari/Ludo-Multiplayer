@@ -290,10 +290,17 @@ const Websocket = function (ws) {
 		let player = new Player(this.ws)
 
 		if (player.id) {
-			let rom = new Room(undefined, openRooms.getByPlayer(player))
+			let rom = openRooms.getByPlayer(player)
 
 			if (rom.status) {
-				let room = rom.room.id
+				let room = new Room(undefined, rom.room.id)
+
+				onlinePlayers.list().forEach(function (ply){
+					if(room.players.find(e => e.id === ply.id)){
+						let plyr = new Player(ply.ws)
+						plyr.setProperty("state", "wait")
+					}
+				})
 				room.delete()
 			} else {
 				this.terminateConnection(rom)
@@ -472,6 +479,11 @@ const Websocket = function (ws) {
 		})
 	}
 
+	/**
+	 *
+	 * @param player
+	 * @param room
+	 */
 	this.sendResignUpdate = function (player, room) {
 		room.players.forEach(function (ply) {
 			if (!ply.resigned && ply.id !== player.id) {
