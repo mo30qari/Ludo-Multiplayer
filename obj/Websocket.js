@@ -295,13 +295,15 @@ const Websocket = function (ws) {
 			if (rom.status) {
 				let room = new Room(undefined, rom.room.id)
 
-				onlinePlayers.list().forEach(function (ply){
-					if(room.players.find(e => e.id === ply.id)){
+				if (room.id){
+					room.players.forEach(function (ply){
 						let plyr = new Player(ply.ws)
 						plyr.setProperty("state", "wait")
-					}
-				})
-				room.delete()
+					})
+					room.delete()
+				} else {
+					this.terminateConnection(room)
+				}
 			} else {
 				this.terminateConnection(rom)
 			}
