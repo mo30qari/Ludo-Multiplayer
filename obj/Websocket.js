@@ -266,16 +266,22 @@ const Websocket = function (ws) {
 		let player = new Player(this.ws)
 
 		if (player.id) {
-			let room = new Room(undefined, openRooms.getByPlayer(player).room.id)
+			let rom = openRooms.getByPlayer(player)
 
-			if (room.id) {
-				let ply = room.players.find(e => e.id === player.id)
+			if(rom.status){
+				let room = new Room(undefined, rom.room.id)
 
-				if (ply) {
-					room.resignPlayer(ply)
+				if (room.id) {
+					let ply = room.players.find(e => e.id === player.id)
+
+					if (ply) {
+						room.resignPlayer(ply)
+					}
+				} else {
+					this.terminateConnection(room)
 				}
- 			} else {
-				this.terminateConnection(room)
+			}else {
+				this.terminateConnection(rom)
 			}
 		} else {
 			this.terminateConnection(player)
@@ -529,7 +535,27 @@ const Websocket = function (ws) {
 	 *
 	 */
 	this.close = function () {
-		console.log("Websocket closed!")
+		let player = new Player(this.ws)
+
+		if(player.id) {
+			let rom = openRooms.getByPlayer(player)
+
+			if (rom.status) {
+				let room = new Room(undefined, rom.room.id)
+
+				if (room.id){
+					if (room.settings.Capacity === 1) {
+						room.delete()
+						console.log("The room: " + room.id + " deleted due to creator: " + player.id + " signing out.")
+					}
+				}
+			} else {
+				console.log("The player: " + player.id + " signed out. No room affected.")
+			}
+
+			console.log("Websocket closed!")
+		}
+
 	}
 
 	/**
