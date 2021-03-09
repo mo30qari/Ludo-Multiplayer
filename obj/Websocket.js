@@ -544,18 +544,22 @@ const Websocket = function (ws) {
 				let room = new Room(undefined, rom.room.id)
 
 				if (room.id){
-					if (room.settings.Capacity === 1) {
+					if (room.players.length === 1) {
 						room.delete()
+						this.sendRoomsListUpdate(player, true, false)// To all waiting players except the player
 						console.log("The room: " + room.id + " deleted due to creator: " + player.id + " signing out.")
+					} else {
+						console.log("The player: " + player.id + " signed out. The created room didn't delete.")
 					}
+				} else {
+					console.log("The player: " + player.id + " signed out. The created room by the player already deleted.")
 				}
 			} else {
 				console.log("The player: " + player.id + " signed out. No room affected.")
 			}
-
-			console.log("Websocket closed!")
+		} else {
+			console.log("An unregistered websocket closed!")
 		}
-
 	}
 
 	/**
