@@ -555,12 +555,15 @@ const Websocket = function (ws) {
 					}
 				} else {
 					console.log("The player: " + player.id + " signed out. The created room by the player already deleted.")
+					console.log(room)
 				}
 			} else {
 				console.log("The player: " + player.id + " signed out. No room affected.")
+				console.log(rom)
 			}
 		} else {
 			console.log("An unregistered websocket closed!")
+			console.log(player)
 		}
 	}
 

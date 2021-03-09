@@ -30,9 +30,13 @@ const OpenRooms = function () {
 	 * @param room
 	 */
 	this.remove = function (room) {
-		OPEN_ROOMS.splice(OPEN_ROOMS.indexOf(room), 1)
-
-		db.writeOnFile("OpenRooms", OPEN_ROOMS)
+		let rom = OPEN_ROOMS.find(e => e.id === room.id)
+		if (rom !== -1) {
+			OPEN_ROOMS.splice(OPEN_ROOMS.indexOf(rom), 1)
+			db.writeOnFile("OpenRooms", OPEN_ROOMS)
+		} else {
+			console.log("No room found to delete!")
+		}
 	}
 
 	/**
@@ -99,7 +103,7 @@ const OpenRooms = function () {
 		db.writeOnFile("OpenRooms", OPEN_ROOMS)
 	}
 
-	this.getByPlayer = function (player) {
+	this.getByPlayer = function (player) {console.log(player.roomId + "..." + player.name)
 		let result = {status: true, errors: []}
 		let room = OPEN_ROOMS.find(e => e.id === player.roomId)
 
