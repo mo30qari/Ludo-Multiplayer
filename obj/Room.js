@@ -194,13 +194,26 @@ const Room = function (creator, id = undefined, settings = undefined) {
 	 * @param player
 	 */
 	this.resignPlayer = function (player) {
-		this.players[this.players.indexOf(player)].resigned = 1
+		let ply = this.players.find(e => e.id === player.id)
 
-		this.setProperty("players", this.players)
+		if(ply) {
+			if (this.state === "play"){
+				this.players[this.players.indexOf(ply)].resigned = 1
+				this.setProperty("players", this.players)
 
-		const WS = require("./Websocket").Websocket
-		let ws = new WS()
-		ws.sendResignUpdate(player, this)
+				const WS = require("./Websocket").Websocket
+				let ws = new WS()
+				ws.sendResignUpdate(player, this)
+			} else if (this.state === "wait") {
+				this.players.splice(this.players.indexOf(ply), 1)
+				this.setProperty("players", this.players)
+
+				const WS = require("./Websocket").Websocket
+				let ws = new WS()
+				ws.sendRoomsListUpdate(player)
+			}
+		}
+
 	}
 
 	/**

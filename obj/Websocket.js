@@ -544,11 +544,13 @@ const Websocket = function (ws) {
 				let room = new Room(undefined, rom.room.id)
 
 				if (room.id){
-					if (room.players.length === 1) {
+					if (room.players.length === 1 && room.players.find(e => e.id === player.id)) {// Delete room only when the player is in the room
 						room.delete()
 						this.sendRoomsListUpdate(player, true, false)// To all waiting players except the player
 						console.log("The room: " + room.id + " deleted due to creator: " + player.id + " signing out.")
 					} else {
+						room.resignPlayer(player)
+						this.sendRoomsListUpdate(player, true, false)// To all waiting players except the player
 						console.log("The player: " + player.id + " signed out. The created room didn't delete.")
 					}
 				} else {
