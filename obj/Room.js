@@ -201,8 +201,6 @@ const Room = function (creator, id = undefined, settings = undefined) {
 				this.players[this.players.indexOf(ply)].resigned = 1
 				this.setProperty("players", this.players)
 
-				console.log(this.players.filter(e => e.resigned === 0).length)
-
 				if (this.players.filter(e => e.resigned === 0).length === 1) {console.log(11)
 					const WS = require("./Websocket").Websocket
 					let ws = new WS()

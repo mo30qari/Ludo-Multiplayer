@@ -174,24 +174,24 @@ const Websocket = function (ws) {
 	this.handlePlayerBackReq = function () {
 		let player = new Player(undefined, this.message.PlayerID)
 
-		if (player.id) {
+		if (player.id) {console.log(111)
 			let room = new Room(undefined, this.message.RoomID)
 
-			if (room.id) {
+			if (room.id) {console.log(222)
 				let result = room.has(player)
 
-				if (result.status) {
+				if (result.status) {console.log(333)
 					player.setBasicProperty("ws", player.ws)
 					this.sendPlayerBackRes(player, room)
-				} else {
+				} else {console.log(-333)
 					this.sendPlayerBackResFalse()
 					console.log("The player: " + player.id + " backs to room: " + room.id + " but the player doesn't belong to the room.")
 				}
-			} else {
+			} else {console.log(-222)
 				this.sendPlayerBackResFalse()
 				console.log("The player: " + player.id + " backs to a room and gives false.")
 			}
-		} else {
+		} else {console.log(-111)
 			this.sendPlayerBackResFalse()
 			console.log("A player backs and gives false.")
 		}
