@@ -172,25 +172,28 @@ const Websocket = function (ws) {
 	 *
 	 */
 	this.handlePlayerBackReq = function () {
-		let room = new Room(undefined, this.message.RoomID)
+		let player = new Player(undefined, this.message.PlayerID)
 
-		if (room.id) {
-			let player = new Player(undefined, this.message.PlayerID)
+		if (player.id) {
+			let room = new Room(undefined, this.message.RoomID)
 
-			if (player.id) {
+			if (room.id) {
 				let result = room.has(player)
 
 				if (result.status) {
 					player.setBasicProperty("ws", player.ws)
-					this.sendPlayerBackRes(player, room, true)
+					this.sendPlayerBackRes(player, room)
 				} else {
-					this.sendPlayerBackRes(player, room, false)
+					this.sendPlayerBackResFalse()
+					console.log("The player: " + player.id + " backs to room: " + room.id + " but the player doesn't belong to the room.")
 				}
 			} else {
-				this.terminateConnection(player)
+				this.sendPlayerBackResFalse()
+				console.log("The player: " + player.id + " backs to a room and gives false.")
 			}
 		} else {
-			this.terminateConnection(room)
+			this.sendPlayerBackResFalse()
+			console.log("A player backs and gives false.")
 		}
 	}
 
@@ -429,25 +432,27 @@ const Websocket = function (ws) {
 	 *
 	 * @param player
 	 * @param room
-	 * @param result
 	 */
-	this.sendPlayerBackRes = function (player, room, result) {
-		if (result) {
-			this.ws.send(JSON.stringify({
-				__Type: "PlayerBackRes",
-				Result: true,
-				Turn: room.data.turn,
-				Dice: room.data.dice,
-				GameState: room.data.gameState,
-				ElapsedTime: (Date.now() - room.startTime) / 1000,
-				Players: this.formatPlayers(room.players)
-			}))
-		} else {
-			this.ws.send(JSON.stringify({
-				__Type: "PlayerBackRes",
-				Result: false
-			}))
-		}
+	this.sendPlayerBackRes = function (player, room) {
+		this.ws.send(JSON.stringify({
+			__Type: "PlayerBackRes",
+			Result: true,
+			Turn: room.data.turn,
+			Dice: room.data.dice,
+			GameState: room.data.gameState,
+			ElapsedTime: (Date.now() - room.startTime) / 1000,
+			Players: this.formatPlayers(room.players)
+		}))
+	}
+
+	/**
+	 *
+	 */
+	this.sendPlayerBackResFalse = function () {
+		this.ws.send(JSON.stringify({
+			__Type: "PlayerBackRes",
+			Result: false
+		}))
 	}
 
 	/**
