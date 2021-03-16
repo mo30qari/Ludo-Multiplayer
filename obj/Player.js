@@ -96,15 +96,6 @@ const Player = function (ws, id = undefined) {
 	}
 
 	/**
-	 *
-	 * @param key
-	 * @return {*}
-	 */
-	this.getProperty = function (key) {
-		return this[key]
-	}
-
-	/**
 	 * This function sets <deleted> field for the player.
 	 * Because of calling <setBasicProperty> function, the
 	 * deletion process also saved into the database and

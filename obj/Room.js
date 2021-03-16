@@ -8,7 +8,7 @@ let timer
  * This object handles all about rooms. The player first
  * creates a room and sends its settings. After that the
  * room is visible for other players. The room manages by
- * states: "wait" & "play".
+ * states: "wait", "play" & "closed".
  * @param creator
  * @param id
  * @param settings
@@ -28,6 +28,7 @@ const Room = function (creator, id = undefined, settings = undefined) {
 		dice: 0// What's the number of latest dice?
 	}
 	this.startTime = undefined
+	this.winner = undefined
 
 	if (this.creator && !this.id) {// New room
 		this.id = openRooms.add(this)
@@ -206,7 +207,9 @@ const Room = function (creator, id = undefined, settings = undefined) {
 					let ws = new WS()
 					ws.sendResignUpdate(player, this)
 
-					this.delete()
+					// this.delete()
+					this.close(this.players.filter(e => e.resigned === 0)[0])
+
 				} else {console.log(22)
 					const WS = require("./Websocket").Websocket
 					let ws = new WS()
@@ -223,6 +226,11 @@ const Room = function (creator, id = undefined, settings = undefined) {
 			}
 		}
 
+	}
+
+	this.close = function (winner = undefined) {
+		this.setProperty("state", "closed")
+		this.setProperty("winner", winner)
 	}
 
 	/**
