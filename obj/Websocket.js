@@ -180,12 +180,17 @@ const Websocket = function (ws) {
 			if (room.id) {console.log(222)
 				let result = room.has(player)
 
-				if (result.status) {console.log(333)
-					player.setBasicProperty("ws", player.ws)
-					this.sendPlayerBackRes(player, room)
+				if (room.winner === undefined) {console.log(333)// The room is in playing
+					if (result.status) {console.log(444)
+						player.setBasicProperty("ws", player.ws)
+						this.sendPlayerBackRes(player, room)
+					} else {console.log(-444)
+						this.sendPlayerBackResFalse()
+						console.log("The player: " + player.id + " backs to room: " + room.id + " but the player doesn't belong to the room.")
+					}
 				} else {console.log(-333)
-					this.sendPlayerBackResFalse()
-					console.log("The player: " + player.id + " backs to room: " + room.id + " but the player doesn't belong to the room.")
+					this.sendPlayerBackResFalse(room.winner)
+					console.log("The player: " + player.id + " backs to a room and gives false.")
 				}
 			} else {console.log(-222)
 				this.sendPlayerBackResFalse()
@@ -326,7 +331,7 @@ const Websocket = function (ws) {
 						let plyr = new Player(ply.ws)
 						plyr.setProperty("state", "wait")
 					})
-					room.delete()
+					room.close(player)
 				} else {
 					this.terminateConnection(room)
 				}
@@ -448,10 +453,14 @@ const Websocket = function (ws) {
 	/**
 	 *
 	 */
-	this.sendPlayerBackResFalse = function () {
+	this.sendPlayerBackResFalse = function (player = undefined) {
+		let winner
+
+		(player === undefined) ? winner = player : winner = player.turn
 		this.ws.send(JSON.stringify({
 			__Type: "PlayerBackRes",
-			Result: false
+			Result: false,
+			Winner: winner
 		}))
 	}
 
@@ -568,7 +577,7 @@ const Websocket = function (ws) {
 
 				if (room.id) {
 					if (room.players.length === 1 && room.players.find(e => e.id === player.id)) {// Delete room only when the player is in the room
-						room.delete()
+						room.close()
 						this.sendRoomsListUpdate(player, true, false)// To all waiting players except the player
 						console.log("The room: " + room.id + " deleted due to creator: " + player.id + " signing out.")
 					} else {
