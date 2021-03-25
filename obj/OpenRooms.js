@@ -103,7 +103,7 @@ const OpenRooms = function () {
 		db.writeOnFile("OpenRooms", OPEN_ROOMS)
 	}
 
-	this.getByPlayer = function (player) {console.log(player.roomId + "..." + player.name)
+	this.getByPlayer = function (player) {
 		let result = {status: true, errors: []}
 		let room = OPEN_ROOMS.find(e => e.id === player.roomId)
 
