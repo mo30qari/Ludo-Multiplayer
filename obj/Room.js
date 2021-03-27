@@ -1,8 +1,9 @@
 const OpenRooms = require("./OpenRooms").OpenRooms
 let openRooms = new OpenRooms()
 
+let UPTIME = 20000
 let DELAY = 15000
-let timer
+let timer, playerTimer
 
 /**
  * This object handles all about rooms. The player first
@@ -27,7 +28,7 @@ const Room = function (creator, id = undefined, settings = undefined) {
 		turn: 1,// Which player should roll dice?
 		dice: 0// What's the number of latest dice?
 	}
-	this.startTime = undefined
+	this.playerStartTime = undefined
 	this.winner = undefined
 
 	if (this.creator && !this.id) {// New room
@@ -42,6 +43,36 @@ const Room = function (creator, id = undefined, settings = undefined) {
 		} else {
 			return result
 		}
+	}
+
+	/**
+	 *
+	 */
+	this.startTimer = function () {
+		clearTimeout(timer)
+
+		let that = this
+
+		timer = setTimeout(function () {
+			that.timeOver()
+		}, UPTIME)
+	}
+
+	/**
+	 *
+	 */
+	this.stopTimer = function () {
+		clearTimeout(timer)
+	}
+
+	/**
+	 *
+	 */
+	this.timeOver = function () {
+		const WS = require("./Websocket").Websocket
+		let ws = new WS()
+
+		ws.handleFastClose(this)
 	}
 
 	/**
@@ -133,21 +164,21 @@ const Room = function (creator, id = undefined, settings = undefined) {
 	/**
 	 *
 	 */
-	this.startTimer = function () {
-		clearTimeout(timer)
+	this.startPlayerTimer = function () {
+		clearTimeout(playerTimer)
 
-		this.setProperty("startTime", Date.now())
+		this.setProperty("playerStartTime", Date.now())
 		let that = this
 
-		timer = setTimeout(function () {
-			that.timeOver()
+		playerTimer = setTimeout(function () {
+			that.playerTimeOver()
 		}, DELAY)
 	}
 
 	/**
 	 *
 	 */
-	this.timeOver = function () {
+	this.playerTimeOver = function () {
 		let player = this.players.find(e => e.turn === this.data.turn)
 		let sendTurnSkipped = true
 
@@ -166,7 +197,7 @@ const Room = function (creator, id = undefined, settings = undefined) {
 		if (sendTurnSkipped)
 			ws.sendTurnSkipped(this)
 
-		this.startTimer()
+		this.startPlayerTimer(playerTimer)
 	}
 
 	/**
@@ -205,15 +236,14 @@ const Room = function (creator, id = undefined, settings = undefined) {
 				if (this.players.filter(e => e.resigned === 0).length === 1) {console.log(11)
 					const WS = require("./Websocket").Websocket
 					let ws = new WS()
-					ws.sendResignUpdate(player, this)
+					ws.sendResignUpdate(this, player)
 
-					// this.delete()
 					this.close(this.players.filter(e => e.resigned === 0)[0])
 
 				} else {console.log(22)
 					const WS = require("./Websocket").Websocket
 					let ws = new WS()
-					ws.sendResignUpdate(player, this)
+					ws.sendResignUpdate(this, player)
 				}
 
 			} else if (this.state === "wait") {
@@ -228,18 +258,22 @@ const Room = function (creator, id = undefined, settings = undefined) {
 
 	}
 
+	/**
+	 *
+	 * @param winner
+	 */
 	this.close = function (winner = undefined) {
 		this.setProperty("state", "closed")
 		this.setProperty("winner", winner)
 	}
 
-	/**
-	 *
-	 */
-	this.delete = function () {
-		clearTimeout(timer)
-		openRooms.remove(this)
-	}
+	// /**
+	//  *
+	//  */
+	// this.delete = function () {
+	// 	clearTimeout(playerTimer)
+	// 	openRooms.remove(this)
+	// }
 
 }
 
