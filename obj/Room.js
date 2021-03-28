@@ -2,7 +2,7 @@ const OpenRooms = require("./OpenRooms").OpenRooms
 let openRooms = new OpenRooms()
 
 let UPTIME = 20000
-let DELAY = 15000
+let PLAYERTIME = 15000
 let timer, playerTimer
 
 /**
@@ -46,7 +46,9 @@ const Room = function (creator, id = undefined, settings = undefined) {
 	}
 
 	/**
-	 *
+	 * This function starts a timer at the beginning of the room,
+	 * if the room doesn't satisfy capacity, it will close after
+	 * UPTIME.
 	 */
 	this.startTimer = function () {
 		clearTimeout(timer)
@@ -59,14 +61,14 @@ const Room = function (creator, id = undefined, settings = undefined) {
 	}
 
 	/**
-	 *
+	 * This function stops room timer once capacity is satisfied.
 	 */
 	this.stopTimer = function () {
 		clearTimeout(timer)
 	}
 
 	/**
-	 *
+	 * This function handles events after the room timer is over.
 	 */
 	this.timeOver = function () {
 		const WS = require("./Websocket").Websocket
@@ -162,7 +164,7 @@ const Room = function (creator, id = undefined, settings = undefined) {
 	}
 
 	/**
-	 *
+	 * This function starts a timer for the players.
 	 */
 	this.startPlayerTimer = function () {
 		clearTimeout(playerTimer)
@@ -172,11 +174,12 @@ const Room = function (creator, id = undefined, settings = undefined) {
 
 		playerTimer = setTimeout(function () {
 			that.playerTimeOver()
-		}, DELAY)
+		}, PLAYERTIME)
 	}
 
 	/**
-	 *
+	 * This function handles the events after a player doesn't
+	 * do anything after <playerTime>.
 	 */
 	this.playerTimeOver = function () {
 		let player = this.players.find(e => e.turn === this.data.turn)
@@ -197,7 +200,9 @@ const Room = function (creator, id = undefined, settings = undefined) {
 		if (sendTurnSkipped)
 			ws.sendTurnSkipped(this)
 
-		this.startPlayerTimer(playerTimer)
+		if (this.state === "play") {
+			this.startPlayerTimer(playerTimer)
+		}
 	}
 
 	/**
