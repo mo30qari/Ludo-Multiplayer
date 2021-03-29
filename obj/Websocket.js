@@ -99,8 +99,7 @@ const Websocket = function (ws) {
             let room = new Room(player, undefined, {
                 Capacity: this.message.Settings.Capacity,
                 SafeSquares: this.message.Settings.SafeSquares,
-                FirstTurnExit: this.message.Settings.FirstTurnExit,
-                Delay: PLAYERTIME
+                FirstTurnExit: this.message.Settings.FirstTurnExit
             }) //Create room
 
             if (room.id) {// The room is ready for players to join

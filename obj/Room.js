@@ -1,9 +1,11 @@
 const OpenRooms = require("./OpenRooms").OpenRooms
 let openRooms = new OpenRooms()
 
-let UPTIME = 20000
+const UPTIME = 20000// The time that room waits for satisfying capacity
+const PLAYERTIME = 12000// The time that the player should do an action
+const WAITINGTIME = 3000// The time difference between Client and Server
 let timer, playerTimer
-let WAITINGTIME = 3000
+
 
 /**
  * This object handles all about rooms. The player first
@@ -21,6 +23,9 @@ const Room = function (creator, id = undefined, settings = undefined) {
 	this.creator = creator
 	this.id = id
 	this.settings = settings// capacity, safeSquares and firstTurnExit
+	this.settings.push({
+		Delay: PLAYERTIME
+	})
 	this.players = []
 	this.state = "wait"// wait, play and closed
 	this.data = {
