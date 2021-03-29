@@ -6,6 +6,8 @@ let onlinePlayers = new OnlinePlayers()
 const OpenRooms = require("./OpenRooms").OpenRooms
 let openRooms = new OpenRooms()
 
+const PLAYERTIME = 12000
+
 const Websocket = function (ws) {
 
     this.ws = ws
@@ -97,7 +99,8 @@ const Websocket = function (ws) {
             let room = new Room(player, undefined, {
                 Capacity: this.message.Settings.Capacity,
                 SafeSquares: this.message.Settings.SafeSquares,
-                FirstTurnExit: this.message.Settings.FirstTurnExit
+                FirstTurnExit: this.message.Settings.FirstTurnExit,
+                Delay: PLAYERTIME
             }) //Create room
 
             if (room.id) {// The room is ready for players to join
