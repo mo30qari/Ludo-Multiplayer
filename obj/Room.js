@@ -2,8 +2,8 @@ const OpenRooms = require("./OpenRooms").OpenRooms
 let openRooms = new OpenRooms()
 
 let UPTIME = 20000
-let PLAYERTIME = 15000
 let timer, playerTimer
+let WAITINGTIME = 3000
 
 /**
  * This object handles all about rooms. The player first
@@ -174,7 +174,7 @@ const Room = function (creator, id = undefined, settings = undefined) {
 
 		playerTimer = setTimeout(function () {
 			that.playerTimeOver()
-		}, PLAYERTIME)
+		}, this.settings.Delay + WAITINGTIME)
 	}
 
 	/**
@@ -238,17 +238,23 @@ const Room = function (creator, id = undefined, settings = undefined) {
 				this.players[this.players.indexOf(ply)].resigned = 1
 				this.setProperty("players", this.players)
 
-				if (this.players.filter(e => e.resigned === 0).length === 1) {console.log(11)
+				if (this.players.filter(e => e.resigned === 0).length === 1) {// If there is only one player in the room
 					const WS = require("./Websocket").Websocket
 					let ws = new WS()
 					ws.sendResignUpdate(this, player)
 
-					this.close(this.players.filter(e => e.resigned === 0)[0])
+					this.close(this.players.filter(e => e.resigned === 0)[0])// Close and send winner
 
-				} else {console.log(22)
+				} else {// There is more than one player in the room
+					if(this.settings.Turn === player.turn){
+						this.nextTurn()
+					}
+
 					const WS = require("./Websocket").Websocket
 					let ws = new WS()
 					ws.sendResignUpdate(this, player)
+
+					this.startPlayerTimer()// Re-run playerTimer
 				}
 
 			} else if (this.state === "wait") {
