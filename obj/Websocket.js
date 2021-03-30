@@ -362,12 +362,6 @@ const Websocket = function (ws) {
         })
 
         room.close()
-
-        let tempPlayer = {// A temporary and false player just to run <sendRoomsListUpdate> function
-            id: "0000000"
-        }
-
-        // this.sendRoomsListUpdate(tempPlayer, true, false)
     }
 
     //End of HANDLE FUNCTIONS
