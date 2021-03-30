@@ -367,7 +367,7 @@ const Websocket = function (ws) {
             id: "0000000"
         }
 
-        this.sendRoomsListUpdate(tempPlayer, true, false)
+        // this.sendRoomsListUpdate(tempPlayer, true, false)
     }
 
     //End of HANDLE FUNCTIONS
