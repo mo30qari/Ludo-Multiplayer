@@ -1,4 +1,4 @@
-const util = require("../functions")
+let util = require("../functions")
 
 let PLAYERS = []// As a table
 
@@ -19,10 +19,8 @@ const Database = function () {
 	 */
 	this.insertPlayer = function (player) {
 		player.id = Math.floor(1000000 + Math.random() * 9000000)
-		// player.id = 5485835
 		PLAYERS.push(player)
-
-		this.writeOnFile("players", PLAYERS)
+		util.logger(player.id, "The player has been created.")
 
 		return player.id
 	}
