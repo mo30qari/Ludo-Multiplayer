@@ -1,7 +1,9 @@
-const logger = function (file, data) {
+module.exports.logger = function (file, data) {
     let fs = require("fs")
     let date = new Date()
-    let content = date.getMonth() + ":" +
+    let content =
+        date.getFullYear() + ":" +
+        date.getMonth() + ":" +
         date.getDate() + "  " +
         date.getHours() + ":" +
         date.getMinutes() + ":" +
@@ -14,10 +16,10 @@ const logger = function (file, data) {
             console.log(err)
             return
         }
-        fs.appendFile("logs/" + file + ".txt", content)
+        fs.appendFile("logs/" + file + ".txt", content, function () {
+            if (err) {
+                console.log(err)
+            }
+        })
     })
-}
-
-exports = {
-    "logger": logger
 }
