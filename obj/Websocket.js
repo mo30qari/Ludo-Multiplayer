@@ -181,36 +181,28 @@ const Websocket = function (ws) {
         let player = new Player(undefined, this.message.PlayerID)
 
         if (player.id) {
-            console.log(111)
             let room = new Room(undefined, this.message.RoomID)
 
             if (room.id) {
-                console.log(222)
                 let result = room.has(player)
 
                 if (room.winner === undefined) {
-                    console.log(333)// The room is in playing
                     if (result.status) {
-                        console.log(444)
                         player.setBasicProperty("ws", player.ws)
                         this.sendPlayerBackRes(player, room)
                     } else {
-                        console.log(-444)
                         this.sendPlayerBackResFalse()
                         console.log("The player: " + player.id + " backs to room: " + room.id + " but the player doesn't belong to the room.")
                     }
                 } else {
-                    console.log(-333)
                     this.sendPlayerBackResFalse(room.winner)
                     console.log("The player: " + player.id + " backs to a room and gives false.")
                 }
             } else {
-                console.log(-222)
                 this.sendPlayerBackResFalse()
                 console.log("The player: " + player.id + " backs to a room and gives false.")
             }
         } else {
-            console.log(-111)
             this.sendPlayerBackResFalse()
             console.log("A player backs and gives false.")
         }
@@ -357,6 +349,10 @@ const Websocket = function (ws) {
         }
     }
 
+    /**
+     *
+     * @param room
+     */
     this.handleFastClose = function (room) {
         room.players.forEach(function (player) {
             player.ws.send(JSON.stringify({
@@ -639,11 +635,15 @@ const Websocket = function (ws) {
         let result = []
 
         players.forEach(function (player) {
-            result.push({
-                PlayerID: player.id,
-                NickName: player.name,
-                Avatar: player.avatar
-            })
+            if (player.resigned === 1) {
+                result.push(null)
+            } else {
+                result.push({
+                    PlayerID: player.id,
+                    NickName: player.name,
+                    Avatar: player.avatar
+                })
+            }
         })
 
         return result
