@@ -1,3 +1,5 @@
+const util = require("../functions")
+
 let PLAYERS = []// As a table
 
 /**

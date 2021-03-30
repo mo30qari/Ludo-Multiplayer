@@ -1,4 +1,6 @@
 const format = require("../config/request.json")
+const util = require("../functions")
+
 const Validate = function () {
 
 	/**

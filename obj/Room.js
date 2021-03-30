@@ -1,5 +1,7 @@
 const OpenRooms = require("./OpenRooms").OpenRooms
 let openRooms = new OpenRooms()
+const util = require("../functions")
+
 
 let UPTIME = 20000// The time that room waits for satisfying capacity
 let timer, playerTimer
@@ -277,14 +279,6 @@ const Room = function (creator, id = undefined, settings = undefined) {
 		this.setProperty("state", "closed")
 		this.setProperty("winner", winner)
 	}
-
-	// /**
-	//  *
-	//  */
-	// this.delete = function () {
-	// 	clearTimeout(playerTimer)
-	// 	openRooms.remove(this)
-	// }
 
 }
 
