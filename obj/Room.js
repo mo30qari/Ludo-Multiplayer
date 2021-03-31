@@ -35,6 +35,7 @@ const Room = function (creator, id = undefined, settings = undefined) {
 
 	if (this.creator && !this.id) {// New room
 		this.id = openRooms.add(this)
+
 	} else if (this.id) {// The room already exists
 		let result = openRooms.get(this.id)
 

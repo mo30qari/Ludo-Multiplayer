@@ -1,5 +1,6 @@
 const Database = require("./Database").Database
 let db = new Database()
+let util = require("../functions")
 
 /**
  * This object keeps and manages the players who are online.
@@ -30,7 +31,7 @@ const OnlinePlayers = function () {
 
 		ONLINE_PLAYERS.push(player)
 
-		db.writeOnFile("OnlinePlayers", ONLINE_PLAYERS)
+		util.logger(player.id, "The player was added to the OnlinePlayers. (OnlinePlayers.add)")
 	}
 
 	/**
@@ -51,8 +52,10 @@ const OnlinePlayers = function () {
 		let player = ONLINE_PLAYERS.find(e => e.id === playerId)
 
 		if (!player) {
+			util.logger(playerId, "The player got an error: The player doesn't exist or isn't active now. (OnlinePlayers.get)")
 			result.errors.push("The player doesn't exist or isn't active now.")
 		} else if (player.deleted) {
+			util.logger(playerId, "The player got an error: The player was deleted from players. (OnlinePlayers.get)")
 			result.errors.push("The player was deleted from players.")
 		}
 
@@ -83,7 +86,7 @@ const OnlinePlayers = function () {
 		let ply = ONLINE_PLAYERS.find(e => e.id === player.id)
 
 		ply[key] = value
-		db.writeOnFile("OnlinePlayers", ONLINE_PLAYERS)
+		util.logger(player.id, "The player set property " + key + " to " + value + ". (OnlinePlayers.update)")
 	}
 }
 

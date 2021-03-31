@@ -5,6 +5,7 @@ const Validate = require("./obj/Validate").Validate
 const WebSocketServer = require("ws").Server
 const wss = new WebSocketServer({port: 8090})
 const WS = require("./obj/Websocket").Websocket
+const util = require("./functions")
 
 
 let valid = new Validate()
@@ -21,9 +22,13 @@ app.get('/', function (req, res) {
 app.get('/register/:username', function (req, res) {
 	res.setHeader('Content-Type', 'application/json')
 
+	util.logger("app", req.params["username"] + " requested to register. (app.get)")
+
 	let result = valid.validateString(req.params["username"], 3, 10)
 
 	if (result.status) {
+		util.logger("app", req.params["username"] + " sent correct info. (app.get)")
+
 		let player = new Player(undefined)
 
 		res.write(JSON.stringify({

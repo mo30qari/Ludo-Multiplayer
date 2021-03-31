@@ -1,5 +1,6 @@
 const Database = require("./Database").Database
 let db = new Database()
+const util = require("../functions")
 
 let OPEN_ROOMS = []
 
@@ -22,6 +23,7 @@ const OpenRooms = function () {
 
 		db.writeOnFile("OpenRooms", OPEN_ROOMS)
 
+		util.logger(room.creator.id, "The player has created a room: " + room.id + ". Added to the OpenRooms.  (OpenRooms.add)")
 		return room.id
 	}
 

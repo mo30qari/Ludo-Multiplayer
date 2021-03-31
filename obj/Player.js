@@ -79,10 +79,6 @@ const Player = function (ws, id = undefined) {
 		onlinePlayers.add(this)
 	}
 
-	this.removeFromOnlinePlayers = function () {
-		onlinePlayers.remove(this)
-	}
-
 	/**
 	 * This method sets immediate information of a player
 	 * during the gameplay. This information is different

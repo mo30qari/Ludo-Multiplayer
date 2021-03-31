@@ -4,7 +4,7 @@ let PLAYERS = []// As a table
 
 /**
  * This object is supposed to do as a real database.
- * In the future I should change it to MySql or Mongo.
+ * In the future I should change it to MySql or MongoDB.
  * @constructor
  */
 const Database = function () {
@@ -20,7 +20,8 @@ const Database = function () {
 	this.insertPlayer = function (player) {
 		player.id = Math.floor(1000000 + Math.random() * 9000000)
 		PLAYERS.push(player)
-		util.logger(player.id, "The player has been created.")
+
+		util.logger(player.id, "The player has been created. (Database.insertPlayer)")
 
 		return player.id
 	}

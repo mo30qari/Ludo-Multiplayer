@@ -19,6 +19,7 @@ const Websocket = function (ws) {
     this.open = function () {
         this.ws.send("Websocket connected on port :8090...")
         console.log("Websocket connected on port :8090...")
+        util.logger("websocket", "Websocket connected on port :8090. (Websocket.open)")
     }
 
     /**
@@ -32,6 +33,7 @@ const Websocket = function (ws) {
         let result = valid.validateRequest(req)// The request should be validated via Validate.validateRequest()
 
         if (result.status) {// Valid request
+            util.logger("websocket", "Websocket connected on port :8090. (Websocket.open)")
             this.message = req
 
             switch (this.message.__Type) {
@@ -79,9 +81,11 @@ const Websocket = function (ws) {
 
         if (!player.id) {// Unauthorized request
             this.terminateConnection(player)
+            util.logger("websocket", "Unauthorized request. (Websocket.handleInitialReq)")
         } else {
             player.setBasicProperty("ws", this.ws)// Relate user information sent via HTTPS and other information sent via Websocket
             player.setProperty("state", "wait")// Set player's state in <OnlinePlayers>
+            util.logger(player.id, "The player has been registered by WS. (Websocket.handleInitialReq)")
 
             // Call some functions to notify the player
             this.sendInitialRes(player)// To the player
