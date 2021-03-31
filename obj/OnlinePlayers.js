@@ -52,10 +52,10 @@ const OnlinePlayers = function () {
 		let player = ONLINE_PLAYERS.find(e => e.id === playerId)
 
 		if (!player) {
-			util.logger(playerId, "The player got an error: The player doesn't exist or isn't active now. (OnlinePlayers.get)")
+			util.logger(playerId, "The player received an error: The player doesn't exist or isn't active now. (OnlinePlayers.get)")
 			result.errors.push("The player doesn't exist or isn't active now.")
 		} else if (player.deleted) {
-			util.logger(playerId, "The player got an error: The player was deleted from players. (OnlinePlayers.get)")
+			util.logger(playerId, "The player received an error: The player was deleted from players. (OnlinePlayers.get)")
 			result.errors.push("The player was deleted from players.")
 		}
 

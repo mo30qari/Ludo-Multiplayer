@@ -53,8 +53,10 @@ const OpenRooms = function () {
 
 		if (!room) {
 			result.errors.push("The player doesn't exist")
+			util.logger("etc", "A player received an error: The player doesn't exist. For room: " + roomId + ". (OpenRooms.get)")
 		} else if (room.deleted) {
 			result.errors.push("The player was deleted")
+			util.logger("etc", "A player received an error: The player was deleted. For room: " + roomId + ". (OpenRooms.get)")
 		}
 
 		if (result.errors.length) {
@@ -102,7 +104,7 @@ const OpenRooms = function () {
 
 		rom[key] = value
 
-		db.writeOnFile("OpenRooms", OPEN_ROOMS)
+		util.logger(rom.creator.id, "The room: " + rom.id + " updated: " + key + " to " + value + ". (OpenRooms.update)")
 	}
 
 	this.getByPlayer = function (player) {
@@ -110,7 +112,9 @@ const OpenRooms = function () {
 		let room = OPEN_ROOMS.find(e => e.id === player.roomId)
 
 		if (!room) {
-			result.errors.push("The player doesn't belong to any room.")
+			result.errors.push("The player doesn't belong to any room")
+			util.logger(player.id, "The player received an error: The player doesn't belong to any room. (OpenRooms.getByPlayer)")
+
 		}
 
 		if (result.errors.length) {

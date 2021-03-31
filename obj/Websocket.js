@@ -35,6 +35,7 @@ const Websocket = function (ws) {
         if (result.status) {// Valid request
             util.logger("websocket", "Websocket connected on port :8090. (Websocket.open)")
             this.message = req
+            util.logger("websocket", "Request received: " + JSON.stringify(this.message) + ". (Websocket.open)")
 
             switch (this.message.__Type) {
                 case "InitialReq": // Registering player in the Websocket server
@@ -67,7 +68,7 @@ const Websocket = function (ws) {
             }
 
         } else {// Unauthorized request
-            this.terminateConnection(result)
+            this.SendError(result)
         }
     }
 
@@ -80,7 +81,7 @@ const Websocket = function (ws) {
         let player = new Player(undefined, this.message.PlayerID)
 
         if (!player.id) {// Unauthorized request
-            this.terminateConnection(player)
+            this.SendError(player)
             util.logger("websocket", "Unauthorized request. (Websocket.handleInitialReq)")
         } else {
             player.setBasicProperty("ws", this.ws)// Relate user information sent via HTTPS and other information sent via Websocket
@@ -109,17 +110,15 @@ const Websocket = function (ws) {
             }) //Create room
 
             if (room.id) {// The room is ready for players to join
-                console.log("A room has been added to the rooms list by " + player.name)
-
                 this.sendCreateRoomRes(room)// To the room's creator
                 this.sendRoomsListUpdate(player, true, false)// To all waiting players except the player
 
                 room.startTimer()
             } else {// The room is not found!
-                this.terminateConnection(player)
+                this.SendError(player)
             }
         } else {// The player is not found!
-            this.terminateConnection(player)
+            this.SendError(player)
         }
 
     }
@@ -150,14 +149,14 @@ const Websocket = function (ws) {
                         room.stopTimer()// This timer will remove the room if it doesn't satisfy capacity
                     }
                 } else {
-                    this.sendError(result)
+                    this.SendError(result)
                 }
 
             } else {// The room is not found!
-                this.terminateConnection(room)
+                this.SendError(room)
             }
         } else {// The player is not found!
-            this.terminateConnection(player)
+            this.SendError(player)
         }
     }
 
@@ -231,13 +230,13 @@ const Websocket = function (ws) {
                     this.sendDiceRolledRes(player, room)
                     room.startPlayerTimer()
                 } else {
-                    this.terminateConnection(room)
+                    this.SendError(room)
                 }
             } else {
-                this.terminateConnection(rom)
+                this.SendError(rom)
             }
         } else {
-            this.terminateConnection(player)
+            this.SendError(player)
         }
     }
 
@@ -257,13 +256,13 @@ const Websocket = function (ws) {
                     this.sendPlayerMovedRes(player, room)
                     room.startPlayerTimer()
                 } else {
-                    this.terminateConnection(room)
+                    this.SendError(room)
                 }
             } else {
-                this.terminateConnection(rom)
+                this.SendError(rom)
             }
         } else {
-            this.terminateConnection(player)
+            this.SendError(player)
         }
     }
 
@@ -286,13 +285,13 @@ const Websocket = function (ws) {
 
                     console.log("Player:" + player.id + " saved data in room: " + room.id)
                 } else {
-                    this.terminateConnection(room)
+                    this.SendError(room)
                 }
             } else {
-                this.terminateConnection(rom)
+                this.SendError(rom)
             }
         } else {
-            this.terminateConnection(player)
+            this.SendError(player)
         }
     }
 
@@ -315,13 +314,13 @@ const Websocket = function (ws) {
                         room.resignPlayer(ply)
                     }
                 } else {
-                    this.terminateConnection(room)
+                    this.SendError(room)
                 }
             } else {
-                this.terminateConnection(rom)
+                this.SendError(rom)
             }
         } else {
-            this.terminateConnection(player)
+            this.SendError(player)
         }
     }
 
@@ -344,13 +343,13 @@ const Websocket = function (ws) {
                     })
                     room.close(player)
                 } else {
-                    this.terminateConnection(room)
+                    this.SendError(room)
                 }
             } else {
-                this.terminateConnection(rom)
+                this.SendError(rom)
             }
         } else {
-            this.terminateConnection(player)
+            this.SendError(player)
         }
     }
 
@@ -364,9 +363,11 @@ const Websocket = function (ws) {
                 __Type: "ResignUpdate",
                 PlayerNumber: player.turn
             }))
+            util.logger(player.id, "The player resigned from room: " + room.id + " because the room doesn't reach capacity.")
         })
 
         room.close()
+        util.logger(room.creator.id, "The room: " + this.id + " closed because it doesn't reach capacity. (Websocket.handleFastClose)")
     }
 
     //End of HANDLE FUNCTIONS
@@ -378,13 +379,15 @@ const Websocket = function (ws) {
      * @param player
      */
     this.sendInitialRes = function (player) {
-        this.ws.send(JSON.stringify({
+        let response = JSON.stringify({
             __Type: "InitialRes",
             Player: {
                 Name: player.name,
                 Avatar: player.avatar
             }
-        }))
+        })
+        this.ws.send(response)
+        util.logger(player.id, "InitialRes sent to the player: " + response + ". (Websocket.sendInitialRes)")
     }
 
 
@@ -414,10 +417,12 @@ const Websocket = function (ws) {
         }
 
         sendList.forEach(function (ply) {
-            ply.ws.send(JSON.stringify({
+            let response = JSON.stringify({
                 __Type: "RoomsListUpdate",
                 Rooms: openRooms.list()
-            }))
+            })
+            ply.ws.send(response)
+            util.logger(ply.id, "RoomsListUpdate sent to the player: " + response + ". (Websocket.sendRoomsListUpdate)")
         })
 
     }
@@ -427,10 +432,12 @@ const Websocket = function (ws) {
      * @param room
      */
     this.sendCreateRoomRes = function (room) {
-        room.creator.ws.send(JSON.stringify({
+        let response = JSON.stringify({
             __Type: "CreateRoomRes",
             RoomID: room.id
-        }))
+        })
+        room.creator.ws.send(response)
+        util.logger(room.creator.id, "CreateRoomRes sent to the player: " + response + ". (Websocket.sendCreateRoomRes)")
     }
 
     /**
@@ -439,11 +446,14 @@ const Websocket = function (ws) {
      * @param room
      */
     this.sendJoinToRoomRes = function (player, room) {
-        player.ws.send(JSON.stringify({
+        let response = JSON.stringify({
             __Type: "JoinToRoomRes",
             Settings: room.settings,
             PlayerNumber: player.turn
-        }))
+        })
+        player.ws.send(response)
+        util.logger(player.id, "JoinToRoomRes sent to the player: " + response + ". (Websocket.sendJoinToRoomRes)")
+
     }
 
     /**
@@ -452,11 +462,13 @@ const Websocket = function (ws) {
      * @param room
      */
     this.sendGameStart = function (player, room) {
-
-        player.ws.send(JSON.stringify({
+        let response = JSON.stringify({
             __Type: "GameStart",
             Players: this.formatPlayers(room.players)
-        }))
+        })
+        player.ws.send(response)
+        util.logger(player.id, "GameStart sent to the player: " + response + ". (Websocket.sendGameStart)")
+
     }
 
     /**
@@ -465,7 +477,7 @@ const Websocket = function (ws) {
      * @param room
      */
     this.sendPlayerBackRes = function (player, room) {
-        this.ws.send(JSON.stringify({
+        let response = JSON.stringify({
             __Type: "PlayerBackRes",
             Result: true,
             Turn: room.data.turn,
@@ -473,7 +485,9 @@ const Websocket = function (ws) {
             GameState: room.data.gameState,
             ElapsedTime: (Date.now() - room.playerStartTime) / 1000,
             Players: this.formatPlayers(room.players)
-        }))
+        })
+        this.ws.send(response)
+        util.logger(player.id, "PlayerBackRes sent to the player: " + response + ". (Websocket.sendPlayerBackRes)")
     }
 
     /**
@@ -483,11 +497,14 @@ const Websocket = function (ws) {
         let winner
 
         (player === undefined) ? winner = player : winner = player.turn
-        this.ws.send(JSON.stringify({
+        let response = JSON.stringify({
             __Type: "PlayerBackRes",
             Result: false,
             Winner: winner
-        }))
+        })
+        this.ws.send(response)
+        util.logger(player.id, "PlayerBackRes sent to the player: " + response + ". (Websocket.sendPlayerBackResFalse)")
+
     }
 
     /**
@@ -496,13 +513,17 @@ const Websocket = function (ws) {
      */
     this.sendDiceRolledRes = function (player, room) {
         let that = this
+        let response
         room.players.forEach(function (ply) {
             if (!ply.resigned && ply.id !== player.id) {
-                ply.ws.send(JSON.stringify({
+                response = JSON.stringify({
                     __Type: "DiceRolledRes",
                     Dice: that.message.Dice,
                     PlayerNumber: player.turn
-                }))
+                })
+                ply.ws.send(response)
+                util.logger(player.id, "DiceRolledRes sent to the player: " + response + ". (Websocket.sendDiceRolledRes)")
+
             }
         })
     }
@@ -514,15 +535,19 @@ const Websocket = function (ws) {
      */
     this.sendPlayerMovedRes = function (player, room) {
         let that = this
+        let response
 
         room.players.forEach(function (ply) {
             if (!ply.resigned && ply.id !== player.id) {
-                ply.ws.send(JSON.stringify({
+                response = JSON.stringify({
                     __Type: "PlayerMovedRes",
                     Pawn: that.message.Pawn,
                     StepCount: that.message.StepCount,
                     PlayerNumber: player.turn
-                }))
+                })
+                ply.ws.send(response)
+                util.logger(player.id, "PlayerMovedRes sent to the player: " + response + ". (Websocket.sendPlayerMovedRes)")
+
             }
         })
     }
@@ -532,14 +557,19 @@ const Websocket = function (ws) {
      * @param room
      */
     this.sendTurnSkipped = function (room) {
+        let response
+
         room.players.forEach(function (ply) {
             if (!ply.resigned) {
-                ply.ws.send(JSON.stringify({
+                response = JSON.stringify({
                     __Type: "TurnSkipped",
                     Turn: room.data.turn,
                     Dice: room.data.dice,
                     GameState: room.data.gameState
-                }))
+                })
+                ply.ws.send(response)
+                util.logger(ply.id, "TurnSkipped sent to the player: " + response + ". (Websocket.sendTurnSkipped)")
+
             }
         })
     }
@@ -550,41 +580,35 @@ const Websocket = function (ws) {
      * @param room
      */
     this.sendResignUpdate = function (room, player) {
+        let response
+
         room.players.forEach(function (ply) {
             if (!ply.resigned && ply.id !== player.id) {
-                ply.ws.send(JSON.stringify({
+                response = JSON.stringify({
                     __Type: "ResignUpdate",
                     PlayerNumber: player.turn
-                }))
+                })
+                ply.ws.send(response)
+                util.logger(ply.id, "ResignUpdate sent to the player: " + response + ". (Websocket.sendResignUpdate)")
+
             }
         })
     }
 
     /**
-     * This method sends the normal (no high-risk)
-     * errors.
-     * @param result
-     */
-    this.sendError = function (result) {
-        this.ws.send(JSON.stringify({
-            __Type: "Error",
-            Errors: result.errors
-        }))
-    }
-
-    /**
-     * This method shows the error and terminates
-     * the websocket connection. Usually this method
-     * is called when a high-risk issue happens in
+     * This method shows the error. Usually this method
+     * is called when an issue happens in
      * the system.
      * @param result
      */
-    this.terminateConnection = function (result) {
-        this.ws.send(JSON.stringify({
-            __Type: "FatalError",
+    this.SendError = function (result) {
+        let response = JSON.stringify({
+            __Type: "Error",
             Errors: result.errors
-        }))
-        // this.ws.terminate()
+        })
+        this.ws.send(response)
+        util.logger("etc", "Error sent to a player: " + response + ". (Websocket.SendError)")
+
     }
 
     // End of SEND RESPONSE FUNCTIONS
@@ -605,23 +629,20 @@ const Websocket = function (ws) {
                     if (room.players.length === 1 && room.players.find(e => e.id === player.id)) {// Delete room only when the player is in the room
                         room.close()
                         this.sendRoomsListUpdate(player, true, false)// To all waiting players except the player
-                        console.log("The room: " + room.id + " deleted due to creator: " + player.id + " signing out.")
+                        util.logger(player.id, "The room: " + room.id + " deleted due to creator signing out. (Websocket.close)")
                     } else {
                         room.resignPlayer(player)
                         this.sendRoomsListUpdate(player, true, false)// To all waiting players except the player
-                        console.log("The player: " + player.id + " signed out. The created room didn't delete.")
+                        util.logger(player.id,"The player signed out. The created room didn't delete. (Websocket.close)")
                     }
                 } else {
-                    console.log("The player: " + player.id + " signed out. The created room by the player already deleted.")
-                    console.log(room)
+                    util.logger(player.id,"The player signed out. The room: by the player already deleted. (Websocket.close)")
                 }
             } else {
-                console.log("The player: " + player.id + " signed out. No room affected.")
-                console.log(rom)
+                util.logger(player.id,"The player signed out. No room affected. (Websocket.close)")
             }
         } else {
-            console.log("An unregistered websocket closed!")
-            console.log(player)
+            util.logger("etc","An unregistered websocket closed!")
         }
     }
 

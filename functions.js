@@ -1,20 +1,24 @@
-const prependFile = require('prepend-file')
-
 module.exports.logger = function (file, data) {
     let fs = require("fs")
     let date = new Date()
-    let content =
+    let dateString =
         date.getFullYear() + ":" +
         date.getMonth() + ":" +
         date.getDate() + "  " +
         date.getHours() + ":" +
         date.getMinutes() + ":" +
         date.getSeconds() + ":" +
-        date.getMilliseconds() + " => " +
-        data + "\n"
+        date.getMilliseconds()
+
+    let today = date.getFullYear() + ":" + date.getMonth() + ":" + date.getDate()
 
         try{
-            fs.appendFileSync("logs/" + file + ".txt", content)
+            let dir = "logs/" + today
+            if (!fs.existsSync(dir)){
+                fs.mkdirSync(dir)
+            }
+            fs.appendFileSync("logs/" + today + "/" + file + ".txt", dateString + " =>\t" + data + "\n")
+            fs.appendFileSync("logs/" + today + "/ALL.txt", dateString + " =>\t" + file + "=>\t" + data + "\n")
         } catch (e) {
             console.error(e)
             console.error("The server can't append data to " + "logs/" + file + ".txt")

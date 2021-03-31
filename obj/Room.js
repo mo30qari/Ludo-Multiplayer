@@ -61,6 +61,8 @@ const Room = function (creator, id = undefined, settings = undefined) {
 		timer = setTimeout(function () {
 			that.timeOver()
 		}, UPTIME)
+		util.logger(this.creator.id, "A timer started for room: " + this.id + ". (Room.startTimer)")
+
 	}
 
 	/**
@@ -68,12 +70,14 @@ const Room = function (creator, id = undefined, settings = undefined) {
 	 */
 	this.stopTimer = function () {
 		clearTimeout(timer)
+		util.logger(this.creator.id, "The timer for room: " + this.id + " stopped. (Room.stopTimer)")
 	}
 
 	/**
 	 * This function handles events after the room timer is over.
 	 */
 	this.timeOver = function () {
+		util.logger(this.creator.id, "The timer for room: " + this.id + " is over. (Room.timeOver)")
 		const WS = require("./Websocket").Websocket
 		let ws = new WS()
 
@@ -92,8 +96,10 @@ const Room = function (creator, id = undefined, settings = undefined) {
 
 		if (this.state === "play") {
 			result.errors.push("The room is in playing now.")
+			util.logger(player.id, "The player received an error: The room is in playing now. (Room.joinPlayer)")
 		} else if (this.state === "closed") {
 			result.errors.push("The room is closed.")
+			util.logger(player.id, "The player received an error: The room is closed. (Room.joinPlayer)")
 		}
 
 		if (result.errors.length) {
@@ -132,6 +138,8 @@ const Room = function (creator, id = undefined, settings = undefined) {
 		this.players.push(player)
 
 		openRooms.update(this, "players", this.players)
+		util.logger(player.id, "The player was added to the room: " + this.id + " players. (Room.addToPlayers)")
+
 	}
 
 	/**
@@ -146,6 +154,7 @@ const Room = function (creator, id = undefined, settings = undefined) {
 
 		if (!ply) {
 			result.errors.push("The player doesn't belong or resigned from the room.")
+			util.logger(player.id, "The player received an error: The player doesn't belong or resigned from the room. (Room.has)")
 		}
 
 		if (result.errors.length) {
@@ -178,6 +187,8 @@ const Room = function (creator, id = undefined, settings = undefined) {
 		playerTimer = setTimeout(function () {
 			that.playerTimeOver()
 		}, this.settings.Delay + WAITINGTIME)
+		util.logger(this.creator.id, "A timer started for the player. (Room.startPlayerTimer)")
+
 	}
 
 	/**
@@ -185,11 +196,14 @@ const Room = function (creator, id = undefined, settings = undefined) {
 	 * do anything after <playerTime>.
 	 */
 	this.playerTimeOver = function () {
+		util.logger(this.creator.id, "The timer for the player is over. (Room.playerTimeOver)")
+
 		let player = this.players.find(e => e.turn === this.data.turn)
 		let sendTurnSkipped = true
 
 		if (player && player.absence < 3) {
 			player.absence++
+			util.logger(player.id, "The player absence set to:" + player.absence)
 			this.setProperty("players", this.players)
 			if (player.absence >= 3){
 				sendTurnSkipped = false
@@ -224,8 +238,11 @@ const Room = function (creator, id = undefined, settings = undefined) {
 
 		if (index === presentPlayers.length - 1) {
 			this.setData("turn", presentPlayers[0])
+			util.logger(this.creator.id, "The room: " + this.id + " updated data: turn to " + presentPlayers[0] + ". (Room.nextTurn)")
 		} else {
 			this.setData("turn", presentPlayers[++index])
+			util.logger(this.creator.id, "The room: " + this.id + " updated data: turn to " + presentPlayers[index] + ". (Room.nextTurn)")
+
 		}
 	}
 
@@ -240,8 +257,10 @@ const Room = function (creator, id = undefined, settings = undefined) {
 			if (this.state === "play"){
 				this.players[this.players.indexOf(ply)].resigned = 1
 				this.setProperty("players", this.players)
+				util.logger(ply.id, "The player resigned from room: " + this.id + ". (Room.resignPlayer)")
 
 				if (this.players.filter(e => e.resigned === 0).length === 1) {// If there is only one player in the room
+					util.logger(ply.id, "There is only one player on the room: " + this.id + ". (Room.resignPlayer)")
 					const WS = require("./Websocket").Websocket
 					let ws = new WS()
 					ws.sendResignUpdate(this, player)
@@ -249,6 +268,7 @@ const Room = function (creator, id = undefined, settings = undefined) {
 					this.close(this.players.filter(e => e.resigned === 0)[0])// Close and send winner
 
 				} else {// There is more than one player in the room
+					util.logger(ply.id, "There is more than 1 player on the room: " + this.id + ". (Room.resignPlayer)")
 					if(this.settings.Turn === player.turn){
 						this.nextTurn()
 					}
@@ -262,6 +282,7 @@ const Room = function (creator, id = undefined, settings = undefined) {
 
 			} else if (this.state === "wait") {
 				this.players.splice(this.players.indexOf(ply), 1)
+				util.logger(ply.id, "The player resigned from the room: " + this.id + " before starting. (Room.resignPlayer)")
 				this.setProperty("players", this.players)
 
 				const WS = require("./Websocket").Websocket
@@ -279,6 +300,7 @@ const Room = function (creator, id = undefined, settings = undefined) {
 	this.close = function (winner = undefined) {
 		this.setProperty("state", "closed")
 		this.setProperty("winner", winner)
+		util.logger(this.creator.id, "The room: " + this.id + " closed. (Room.close)")
 	}
 
 }
