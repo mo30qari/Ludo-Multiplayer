@@ -1,6 +1,7 @@
 module.exports.logger = function (file, data) {
     let fs = require("fs")
-    let date = new Date()
+    let d = new Date()
+    let date = convertDate(d, "Asia/Tehran")
     let dateString =
         date.getFullYear() + ":" +
         date.getMonth() + ":" +
@@ -23,4 +24,8 @@ module.exports.logger = function (file, data) {
             console.error(e)
             console.error("The server can't append data to " + "logs/" + file + ".txt")
         }
+}
+
+let convertDate = function (date, tzString) {
+    return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", {timeZone: tzString}));
 }
