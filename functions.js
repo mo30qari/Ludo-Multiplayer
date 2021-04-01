@@ -26,6 +26,12 @@ module.exports.logger = function (file, data) {
         }
 }
 
+/**
+ * This function change Timezone for Date object.
+ * @param date
+ * @param tzString
+ * @returns {Date}
+ */
 let convertDate = function (date, tzString) {
     return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", {timeZone: tzString}));
 }
