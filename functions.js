@@ -18,8 +18,8 @@ module.exports.logger = function (file, data) {
             if (!fs.existsSync(dir)){
                 fs.mkdirSync(dir)
             }
-            fs.appendFileSync("logs/" + today + "/" + file + ".txt", dateString + " =>\t" + data + "\n")
-            fs.appendFileSync("logs/" + today + "/ALL.txt", dateString + " =>\t" + file + "=>\t" + data + "\n")
+            // fs.appendFileSync("logs/" + today + "/" + file + ".txt", dateString + " =>\t" + data + "\n")
+            fs.appendFileSync("logs/" + today + ".txt", dateString + " =>\t" + file + "=>\t" + data + "\n")
         } catch (e) {
             console.error(e)
             console.error("The server can't append data to " + "logs/" + file + ".txt")
