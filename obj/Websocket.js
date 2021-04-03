@@ -196,19 +196,15 @@ const Websocket = function (ws) {
                         this.sendPlayerBackRes(player, room)
                     } else {
                         this.sendPlayerBackResFalse()
-                        console.log("The player: " + player.id + " backs to room: " + room.id + " but the player doesn't belong to the room.")
                     }
                 } else {
                     this.sendPlayerBackResFalse(room.winner)
-                    console.log("The player: " + player.id + " backs to a room and gives false.")
                 }
             } else {
                 this.sendPlayerBackResFalse()
-                console.log("The player: " + player.id + " backs to a room and gives false.")
             }
         } else {
             this.sendPlayerBackResFalse()
-            console.log("A player backs and gives false.")
         }
     }
 
@@ -283,7 +279,6 @@ const Websocket = function (ws) {
                     room.setData("dice", this.message.Dice)
                     room.setData("turn", this.message.Turn)
 
-                    console.log("Player:" + player.id + " saved data in room: " + room.id)
                 } else {
                     this.SendError(room)
                 }

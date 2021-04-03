@@ -42,8 +42,6 @@ const OnlinePlayers = function () {
 	this.remove = function (player) {
 		if (ONLINE_PLAYERS.indexOf(player) !== -1) {// If player exists
 			ONLINE_PLAYERS.splice(ONLINE_PLAYERS.indexOf(player), 1)
-			
-			db.writeOnFile("OnlinePlayers", ONLINE_PLAYERS)
 		}
 	}
 

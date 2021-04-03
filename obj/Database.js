@@ -84,28 +84,9 @@ const Database = function () {
 			result.status = false
 		} else {
 			result.player = player
-			this.writeOnFile("players", PLAYERS)
 		}
 
 		return result
-	}
-
-	/**
-	 * This function get file name (without file format) and data and inserts data into the file.
-	 * @param fileName
-	 * @param data
-	 */
-	this.writeOnFile = function (fileName, data) {
-		let fs = require("fs")
-
-		try {// The codes in this block sometimes make problem (JSON circular structure)
-			fs.writeFile(fileName + ".json", JSON.stringify(data, null, 4), function (error){
-				if (error !== null)
-					console.log(error.message)
-			})
-		} catch (e) {
-			// console.log(e.message)
-		}
 	}
 
 }

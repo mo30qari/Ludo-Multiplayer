@@ -21,8 +21,6 @@ const OpenRooms = function () {
 		room.id = Math.floor(1000000 + Math.random() * 9000000)
 		OPEN_ROOMS.push(room)
 
-		db.writeOnFile("OpenRooms", OPEN_ROOMS)
-
 		util.logger(room.creator.id, "The player has created a room: " + room.id + ". Added to the OpenRooms.  (OpenRooms.add)")
 		return room.id
 	}
@@ -35,9 +33,6 @@ const OpenRooms = function () {
 		let rom = OPEN_ROOMS.find(e => e.id === room.id)
 		if (rom !== -1) {
 			OPEN_ROOMS.splice(OPEN_ROOMS.indexOf(rom), 1)
-			db.writeOnFile("OpenRooms", OPEN_ROOMS)
-		} else {
-			console.log("No room found to delete!")
 		}
 	}
 
