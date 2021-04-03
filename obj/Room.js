@@ -43,6 +43,7 @@ const Room = function (creator, id = undefined, settings = undefined) {
 			for (const [key, value] of Object.entries(result.room)){
 				this[key] = value
 			}
+
 		} else {
 			return result
 		}
@@ -259,7 +260,8 @@ const Room = function (creator, id = undefined, settings = undefined) {
 				this.setProperty("players", this.players)
 				util.logger(ply.id, "The player resigned from room: " + this.id + ". (Room.resignPlayer)")
 
-				if (this.players.filter(e => e.resigned === 0).length === 1) {// If there is only one player in the room
+				if (this.players.filter(e => e.resigned === 0).length < 2) {// If there is only one player in the room
+
 					util.logger(ply.id, "There is only one player on the room: " + this.id + ". (Room.resignPlayer)")
 					const WS = require("./Websocket").Websocket
 					let ws = new WS()
@@ -268,6 +270,7 @@ const Room = function (creator, id = undefined, settings = undefined) {
 					this.close(this.players.filter(e => e.resigned === 0)[0])// Close and send winner
 
 				} else {// There is more than one player in the room
+
 					util.logger(ply.id, "There is more than 1 player on the room: " + this.id + ". (Room.resignPlayer)")
 					if(this.settings.Turn === player.turn){
 						this.nextTurn()
@@ -300,6 +303,7 @@ const Room = function (creator, id = undefined, settings = undefined) {
 	this.close = function (winner = undefined) {
 		this.setProperty("state", "closed")
 		this.setProperty("winner", winner)
+		clearTimeout(playerTimer)
 		util.logger(this.creator.id, "The room: " + this.id + " closed. (Room.close)")
 	}
 
