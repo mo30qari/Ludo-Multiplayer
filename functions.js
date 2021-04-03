@@ -9,8 +9,8 @@ module.exports.logger = function (account, data) {
         date.getMilliseconds()
 
     let today =
-        date.getFullYear() + ":" +
-        date.getMonth() + ":" +
+        date.getFullYear() + "-" +
+        date.getMonth() + "-" +
         date.getDate()
 
         try{
