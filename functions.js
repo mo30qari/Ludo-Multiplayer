@@ -1,4 +1,4 @@
-module.exports.logger = function (file, data) {
+module.exports.logger = function (account, data) {
     let fs = require("fs")
     let d = new Date()
     let date = convertDate(d, "Asia/Tehran")
@@ -14,15 +14,15 @@ module.exports.logger = function (file, data) {
     let today = date.getFullYear() + ":" + date.getMonth() + ":" + date.getDate()
 
         try{
-            let dir = "logs/" + today
-            if (!fs.existsSync(dir)){
-                fs.mkdirSync(dir)
-            }
+            // let dir = "logs/" + today
+            // if (!fs.existsSync(dir)){
+            //     fs.mkdirSync(dir)
+            // }
             // fs.appendFileSync("logs/" + today + "/" + file + ".txt", dateString + " =>\t" + data + "\n")
-            fs.appendFileSync("logs/" + today + ".txt", dateString + " =>\t" + file + "=>\t" + data + "\n")
+            fs.appendFileSync("logs/" + today + ".txt", dateString + " =>\t" + account + "=>\t" + data + "\n")
         } catch (e) {
             console.error(e)
-            console.error("The server can't append data to " + "logs/" + file + ".txt")
+            console.error("The server can't append data to " + "logs/" + account + ".txt")
         }
 }
 
