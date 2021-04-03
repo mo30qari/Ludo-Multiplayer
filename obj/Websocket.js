@@ -503,7 +503,7 @@ const Websocket = function (ws) {
             Winner: winner
         })
         this.ws.send(response)
-        util.logger(player.id, "PlayerBackRes sent to the player: " + response + ". (Websocket.sendPlayerBackResFalse)")
+        util.logger("etc", "PlayerBackRes sent to the player: " + response + ". (Websocket.sendPlayerBackResFalse)")
 
     }
 
