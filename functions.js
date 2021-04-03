@@ -3,15 +3,15 @@ module.exports.logger = function (account, data) {
     let d = new Date()
     let date = convertDate(d, "Asia/Tehran")
     let dateString =
-        date.getFullYear() + ":" +
-        date.getMonth() + ":" +
-        date.getDate() + "  " +
         date.getHours() + ":" +
         date.getMinutes() + ":" +
         date.getSeconds() + ":" +
         date.getMilliseconds()
 
-    let today = date.getFullYear() + ":" + date.getMonth() + ":" + date.getDate()
+    let today =
+        date.getFullYear() + ":" +
+        date.getMonth() + ":" +
+        date.getDate()
 
         try{
             // let dir = "logs/" + today
