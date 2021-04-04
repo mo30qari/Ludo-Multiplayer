@@ -22,6 +22,7 @@ const Player = function (ws, id = undefined) {
 	this.ws = ws
 	this.id = id
 	this.avatar = 1
+	this.deleted = 0
 	let result = {}
 
 	if (!this.ws && !this.id) {// New player
@@ -102,7 +103,7 @@ const Player = function (ws, id = undefined) {
 	 * @return {{errors: *[], status: boolean}}
 	 */
 	this.delete = function () {
-		return this.setBasicProperty("deleted", 1)
+		onlinePlayers.delete(this)
 	}
 
 }

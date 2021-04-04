@@ -399,7 +399,7 @@ const Websocket = function (ws) {
             sendList.push(player)
         } else {
             onlinePlayers.list().forEach(function (ply) {
-                if (ply.state === "wait" && ply.id !== player.id) {
+                if (ply.state === "wait" && ply.deleted === 0 && ply.id !== player.id) {
                     sendList.push(ply)
                 }
             })
@@ -623,10 +623,12 @@ const Websocket = function (ws) {
                 if (room.id) {
                     if (room.players.length === 1 && room.players.find(e => e.id === player.id)) {// Delete room only when the player is in the room
                         room.close()
+                        player.delete()
                         this.sendRoomsListUpdate(player, true, false)// To all waiting players except the player
                         util.logger(player.id, "The room: " + room.id + " deleted due to the room has only one member. (Websocket.close)")
                     } else {
                         room.resignPlayer(player)
+                        player.delete()
                         this.sendRoomsListUpdate(player, true, false)// To all waiting players except the player
                         util.logger(player.id,"The player signed out. The created room didn't delete. (Websocket.close)")
                     }

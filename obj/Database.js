@@ -89,6 +89,32 @@ const Database = function () {
 		return result
 	}
 
+	// /**
+	//  * This function set player as deleted.
+	//  * @param player
+	//  * @returns {{errors: [], status: boolean}}
+	//  */
+	// this.deletePlayer = function (player) {
+	// 	let result = {status: true, errors: []}
+	// 	let ply = PLAYERS.find(e => e.id === player.id)
+	//
+	// 	if (!ply) {
+	// 		result.errors.push("The player doesn't exist")
+	// 	} else if (ply.deleted) {
+	// 		result.errors.push("The player was deleted")
+	// 	} else {
+	// 		ply["deleted"] = 1
+	// 	}
+	//
+	// 	if (result.errors.length) {
+	// 		result.status = false
+	// 	} else {
+	// 		result.player = player
+	// 	}
+	//
+	// 	return result
+	// }
+
 }
 
 exports.Database = Database

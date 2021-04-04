@@ -34,17 +34,6 @@ const OnlinePlayers = function () {
 		util.logger(player.id, "The player was added to the OnlinePlayers. (OnlinePlayers.add)")
 	}
 
-	/**
-	 *This function deletes a existed player from the <ONLINE_PLAYERS>
-	 *If player doesn't exists does nothing.
-	 * @param player
-	 */
-	this.remove = function (player) {
-		if (ONLINE_PLAYERS.indexOf(player) !== -1) {// If player exists
-			ONLINE_PLAYERS.splice(ONLINE_PLAYERS.indexOf(player), 1)
-		}
-	}
-
 	this.get = function(playerId) {
 		let result = {status: true, errors: []}
 		let player = ONLINE_PLAYERS.find(e => e.id === playerId)
@@ -85,6 +74,19 @@ const OnlinePlayers = function () {
 
 		ply[key] = value
 		util.logger(player.id, "The player set property " + key + " to " + value + ". (OnlinePlayers.update)")
+	}
+
+	/**
+	 *This function deletes a existed player from the <ONLINE_PLAYERS>
+	 *If player doesn't exists does nothing.
+	 * @param player
+	 */
+	this.delete = function (player) {
+		let ply = ONLINE_PLAYERS.find(e => e.id === player.id)
+
+		if (ONLINE_PLAYERS.indexOf(ply) !== -1) {// If player exists
+			ONLINE_PLAYERS.splice(ONLINE_PLAYERS.indexOf(player), 1)
+		}
 	}
 }
 
