@@ -624,17 +624,17 @@ const Websocket = function (ws) {
                     if (room.players.length === 1 && room.players.find(e => e.id === player.id)) {// Delete room only when the player is in the room
                         room.close()
                         this.sendRoomsListUpdate(player, true, false)// To all waiting players except the player
-                        util.logger(player.id, "The room: " + room.id + " deleted due to creator signing out. (Websocket.close)")
+                        util.logger(player.id, "The room: " + room.id + " deleted due to the room has only one member. (Websocket.close)")
                     } else {
                         room.resignPlayer(player)
                         this.sendRoomsListUpdate(player, true, false)// To all waiting players except the player
                         util.logger(player.id,"The player signed out. The created room didn't delete. (Websocket.close)")
                     }
                 } else {
-                    util.logger(player.id,"The player signed out. The room: by the player already deleted. (Websocket.close)")
+                    util.logger(player.id,"The player signed out. The room of the player is already deleted. (Websocket.close)")
                 }
             } else {
-                util.logger(player.id,"The player signed out. No room affected. (Websocket.close)")
+                util.logger(player.id,"The player signed out. He isn't member of any room. (Websocket.close)")
             }
         } else {
             util.logger("etc","An unregistered websocket closed!")

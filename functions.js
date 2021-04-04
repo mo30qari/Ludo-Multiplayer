@@ -19,7 +19,7 @@ module.exports.logger = function (account, data) {
             //     fs.mkdirSync(dir)
             // }
             // fs.appendFileSync("logs/" + today + "/" + file + ".txt", dateString + " =>\t" + data + "\n")
-            fs.appendFileSync("logs/" + today + ".txt", dateString + " =>\t" + account + "=>\t" + data + "\n")
+            fs.appendFileSync("logs/" + today, dateString + " =>\t" + account + "=>\t" + data + "\n")
         } catch (e) {
             console.error(e)
             console.error("The server can't append data to " + "logs/" + account + ".txt")
