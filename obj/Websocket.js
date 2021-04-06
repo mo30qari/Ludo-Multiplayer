@@ -364,6 +364,8 @@ const Websocket = function (ws) {
         })
 
         room.close()
+        let player = {id: "0000000"}
+        this.sendRoomsListUpdate(player, true, false)
         util.logger(room.creator.id, "The room: " + this.id + " closed because it doesn't reach capacity. (Websocket.handleFastClose)")
     }
 

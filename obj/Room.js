@@ -4,7 +4,8 @@ const util = require("../functions")
 
 
 let UPTIME = 20000// The time that room waits for satisfying capacity
-let timer, playerTimer
+let timers = []
+let playerTimers = []
 let WAITINGTIME = 3000// The time difference between Client and Server
 
 /**
@@ -33,6 +34,9 @@ const Room = function (creator, id = undefined, settings = undefined) {
 	this.playerStartTime = undefined
 	this.winner = undefined
 
+	// this.timer = undefined
+	// this.playerTimer
+
 	if (this.creator && !this.id) {// New room
 		this.id = openRooms.add(this)
 
@@ -55,13 +59,15 @@ const Room = function (creator, id = undefined, settings = undefined) {
 	 * UPTIME.
 	 */
 	this.startTimer = function () {
-		clearTimeout(timer)
-
+		clearTimeout(timers.find(e => e.room === this.id))
 		let that = this
 
-		timer = setTimeout(function () {
+		this.timer = setTimeout(function () {
 			that.timeOver()
 		}, UPTIME)
+		this.timer.room = this.id
+		timers.push(this.timer)
+
 		util.logger(this.creator.id, "A timer started for room: " + this.id + ". (Room.startTimer)")
 
 	}
@@ -70,7 +76,7 @@ const Room = function (creator, id = undefined, settings = undefined) {
 	 * This function stops room timer once capacity is satisfied.
 	 */
 	this.stopTimer = function () {
-		clearTimeout(timer)
+		clearTimeout(timers.find(e => e.room === this.id))
 		util.logger(this.creator.id, "The timer for room: " + this.id + " stopped. (Room.stopTimer)")
 	}
 
@@ -180,14 +186,18 @@ const Room = function (creator, id = undefined, settings = undefined) {
 	 * This function starts a timer for the players.
 	 */
 	this.startPlayerTimer = function () {
-		clearTimeout(playerTimer)
+		clearTimeout(playerTimers.find(e => e.room === this.id))
 
 		this.setProperty("playerStartTime", Date.now())
 		let that = this
 
-		playerTimer = setTimeout(function () {
+		this.playerTimer = setTimeout(function () {
 			that.playerTimeOver()
 		}, this.settings.Delay + WAITINGTIME)
+
+		this.playerTimer.room = this.id
+		playerTimers.push(this.timer)
+
 		util.logger(this.creator.id, "A timer started for the player. (Room.startPlayerTimer)")
 
 	}
@@ -219,7 +229,7 @@ const Room = function (creator, id = undefined, settings = undefined) {
 			ws.sendTurnSkipped(this)
 
 		if (this.state === "play") {
-			this.startPlayerTimer(playerTimer)
+			this.startPlayerTimer()
 		}
 	}
 
@@ -303,7 +313,7 @@ const Room = function (creator, id = undefined, settings = undefined) {
 	this.close = function (winner = undefined) {
 		this.setProperty("state", "closed")
 		this.setProperty("winner", winner)
-		clearTimeout(playerTimer)
+		clearTimeout(playerTimers.find(e => e.room === this.id))
 		util.logger(this.creator.id, "The room: " + this.id + " closed. (Room.close)")
 	}
 
