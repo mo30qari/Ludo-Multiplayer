@@ -334,9 +334,8 @@ const Websocket = function (ws) {
                 if (room.id) {
                     room.players.forEach(function (ply) {
                         let plyr = new Player(ply.ws)
-                        if (plyr) {
+                        if (plyr.id)// To the present players, not deleted
                             plyr.setProperty("state", "wait")
-                        }
                     })
                     room.close(player)
                 } else {
