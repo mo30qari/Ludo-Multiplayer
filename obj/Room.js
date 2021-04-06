@@ -6,7 +6,7 @@ const util = require("../functions")
 let UPTIME = 20000// The time that room waits for satisfying capacity
 let timers = []
 let playerTimers = []
-let WAITINGTIME = 3000// The time difference between Client and Server
+let WAITINGTIME = 5000// The time difference between Client and Server
 
 /**
  * This object handles all about rooms. The player first
@@ -195,8 +195,16 @@ const Room = function (creator, id = undefined, settings = undefined) {
 			that.playerTimeOver()
 		}, this.settings.Delay + WAITINGTIME)
 
-		this.playerTimer.room = this.id
-		playerTimers.push(this.playerTimer)
+		if (playerTimers.find(e => e.room === this.id) === undefined) {
+			this.playerTimer.room = this.id
+			playerTimers.push(this.playerTimer)
+
+		} else {
+
+			playerTimers.splice(playerTimers.indexOf(playerTimers.find(e => e.room === this.id)), 1)
+			this.playerTimer.room = this.id
+			playerTimers.push(this.playerTimer)
+		}
 
 		util.logger(this.creator.id, "A timer started for the player. (Room.startPlayerTimer)")
 
