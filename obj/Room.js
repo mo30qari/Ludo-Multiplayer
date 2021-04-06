@@ -196,7 +196,7 @@ const Room = function (creator, id = undefined, settings = undefined) {
 		}, this.settings.Delay + WAITINGTIME)
 
 		this.playerTimer.room = this.id
-		playerTimers.push(this.timer)
+		playerTimers.push(this.playerTimer)
 
 		util.logger(this.creator.id, "A timer started for the player. (Room.startPlayerTimer)")
 
