@@ -84,9 +84,9 @@ const OnlinePlayers = function () {
 	this.delete = function (player) {
 		let ply = ONLINE_PLAYERS.find(e => e.id === player.id)
 
-		if (ONLINE_PLAYERS.indexOf(ply) !== -1) {// If player exists
+		if (ply.id) {// If player exists
 			util.logger(player.id, "The player deleted from the onlinePlayers.")
-			ONLINE_PLAYERS.splice(ONLINE_PLAYERS.indexOf(player), 1)
+			ONLINE_PLAYERS.splice(ONLINE_PLAYERS.indexOf(ply), 1)
 		}
 	}
 }
