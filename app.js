@@ -7,6 +7,9 @@ const wss = new WebSocketServer({port: 8090})
 const WS = require("./obj/Websocket").Websocket
 const util = require("./functions")
 
+util.logger("etc", "End of previous logs\n")
+util.logger("etc", "Server started...\n\n\n\n")
+
 
 let valid = new Validate()
 
