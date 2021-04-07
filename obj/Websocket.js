@@ -624,6 +624,7 @@ const Websocket = function (ws) {
                 let room = new Room(undefined, rom.room.id)
 
                 if (room.id) {
+                    util.logger(player.id, "The room: " + room.id + " misses one player and now has " + room.players.length + " players.")
                     if (room.players.length === 1 && room.players.find(e => e.id === player.id)) {// Delete room only when the player is in the room
                         room.close()
                         player.delete()
