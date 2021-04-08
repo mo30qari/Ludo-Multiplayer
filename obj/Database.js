@@ -1,4 +1,6 @@
 let util = require("../functions")
+const mongoClient = require('mongodb').MongoClient
+const url = "mongodb://localhost:27017/Ludo-Multiplayer"
 
 let PLAYERS = []// As a table
 
@@ -89,21 +91,98 @@ const Database = function () {
 		return result
 	}
 
-	// /**
-	//  * This function set player as deleted.
-	//  * @param player
-	//  * @returns {{errors: [], status: boolean}}
-	//  */
-	// this.deletePlayer = function (player) {
+	/**
+	 * This function tries to connect to the database.
+	 */
+	this.init = function () {
+		try {
+			mongoClient.connect(url, {useUnifiedTopology: true}, function (err, client) {
+				if (err) util.logger("etc", err + " (Database.init")
+				const admin = client.db("Ludo-Multiplayer").admin()
+
+				admin.listDatabases(function (err, dbs) {
+					if (err) util.logger("etc", err + " (Database.init")
+					if (dbs.databases.find(e => e.name === "Ludo-Multiplayer") === undefined) {// If Ludo-Multiplayer has not been created yet!
+						let db = client.db("Ludo-Multiplayer")
+
+						db.createCollection("Players", function (err) {
+							if (err) util.logger("etc", err + " (Database.init")
+							client.close()
+						})
+						console.log("The database Ludo-Multiplayer has been created!")
+					}
+				})
+			})
+		} catch (err) {
+			util.logger("etc", err + " (Database.init)")
+		}
+
+	}
+
+	this.connectToDB = function () {
+		let result = {status: true, errors: []}
+
+		mongoClient.connect(url, {useUnifiedTopology: true}, function (err, client) {
+			if (err) {
+				result.errors.push(err)
+				util.logger("etc", err + " (Database.init")
+			}
+
+			if (result.errors.length) {
+				result.status = false
+			} else {
+				result.db = client.db("Ludo-Multiplayer")
+			}
+		})
+
+		return result
+	}
+
+	this.insertPlayerIntoDB = function (player) {
+		let result = {status: true, errors: []}
+		let res = this.connectToDB()
+
+		if (res.status) {
+			player.id = Math.floor(1000000 + Math.random() * 9000000)
+			res.db.collection("Players").insertOne(player, function (err, playerId) {
+				if (err) {
+					result.errors.push(err)
+					util.logger("etc", err + " (Database.init")
+				}
+
+				if (result.errors.length) {
+					result.status = false
+				} else {
+					result.playerId = player.id
+				}
+			})
+		} else {
+			result = res
+		}
+
+		return result
+	}
+
+	// this.findPlayerIntoDB = function (ws, id = undefined) {
 	// 	let result = {status: true, errors: []}
-	// 	let ply = PLAYERS.find(e => e.id === player.id)
+	// 	let res = this.connectToDB()
+	// 	let player
 	//
-	// 	if (!ply) {
+	// 	if (res.status) {
+	// 		res.db.collection("Ludo-Multiplayer")
+	// 	}
+	//
+	//
+	// 		if (ws) {
+	// 		player = PLAYERS.find(e => e.ws === ws)
+	// 	} else if (id){
+	// 		player = PLAYERS.find(e => e.id === id)
+	// 	}
+	//
+	// 	if (!player) {
 	// 		result.errors.push("The player doesn't exist")
-	// 	} else if (ply.deleted) {
+	// 	} else if (player.deleted) {
 	// 		result.errors.push("The player was deleted")
-	// 	} else {
-	// 		ply["deleted"] = 1
 	// 	}
 	//
 	// 	if (result.errors.length) {
@@ -114,6 +193,7 @@ const Database = function () {
 	//
 	// 	return result
 	// }
+
 
 }
 
