@@ -22,7 +22,7 @@ app.get('/', function (req, res) {
 	res.send("Ludo Multiplayer! Go to Register to start the game.")
 })
 
-app.get('/register/:username', function (req, res) {
+app.get('/register/:username', async function (req, res) {
 	res.setHeader('Content-Type', 'application/json')
 
 	util.logger("app", req.params["username"] + " requested to register. (app.get)")
@@ -32,17 +32,22 @@ app.get('/register/:username', function (req, res) {
 	if (result.status) {
 		util.logger("app", req.params["username"] + " sent correct info. (app.get)")
 
-		let player = new Player(undefined)
+		try {
+			let player = await new Player(undefined)
+			if (player.id) player.setBasicProperty("name", req.params["username"])
+		}
+		catch (err) {
+			console.log("Error: " + err)
+		}
 
-		res.write(JSON.stringify({
-			status: true,
-			Player: {
-				PlayerID: player.id,
-				Avatar: player.avatar
-			}
-		}))
 
-		player.setBasicProperty("name", req.params["username"])
+		// res.write(JSON.stringify({
+		// 	status: true,
+		// 	Player: {
+		// 		PlayerID: player.id,
+		// 		Avatar: player.avatar
+		// 	}
+		// }))
 
 	} else {
 		res.write(JSON.stringify(result))

@@ -26,12 +26,14 @@ const Player = function (ws, id = undefined) {
 	let result = {}
 
 	if (!this.ws && !this.id) {// New player
-		this.id = db.insertPlayer(this)
+		this.id = db.insertPlayerIntoDB(this)
 	} else {
 		if (this.ws) {// Already registered player by WS
-			result = db.getPlayer(this.ws)
+			// result = db.getPlayer(this.ws)
+			// result = db.findPlayerIntoDB(this.ws)
 		} else if (this.id) {// The player wants to register by WS
-			result = db.getPlayer(undefined, this.id)
+			// result = db.getPlayer(undefined, this.id)
+			// result = db.findPlayerIntoDB(undefined, this.id)
 		}
 
 		if (result.status) {
@@ -60,7 +62,8 @@ const Player = function (ws, id = undefined) {
 	 * @return {{errors: *[], status: boolean}}
 	 */
 	this.setBasicProperty = function (key, value) {
-		let result = db.updatePlayer(this, key, value)
+		//let result = db.updatePlayer(this, key, value)
+		let result = db.updatePlayerIntoDB(this, key, value)
 
 		if(result.status) {
 			this[key] = value
